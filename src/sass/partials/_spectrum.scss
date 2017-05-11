@@ -1,0 +1,40 @@
+/* Spectrum */
+
+#spectrum-container { clear: both; background: #f8f8f8; padding-bottom: 100px; text-align: center; }
+#spectrum-container .context { width: 500px; }
+@media only screen and (max-width: 735px) {
+    #spectrum-container { width: 100%; text-align: left; padding: 0 0 50px; }
+	#spectrum-container .context { width: 90%; text-align: center; }
+}
+
+#spectrum-container .context h1 { color: #333; }
+#spectrum-container .context p { color: #666; }
+#spectrum-wrapper { display: block; margin-top: 60px; }
+@media only screen and (max-width: 1024px) {
+	#spectrum-wrapper { width: 90%; padding: 0 5%; }
+}
+@media only screen and (max-width: 735px) {
+	#spectrum-wrapper { width: 90%; padding: 0 5%; margin-top: 0; }
+}
+
+#spectrum { display: inline-block; }
+#spectrum li { display: inline-table; float: left; margin-right: 2px; text-align: left; overflow: hidden; border-left: 1px solid #aaa; }
+#spectrum .hbar { display: block; width: 0; height: 35px; margin-left: -1px; }
+#spectrum .label { display: block; font-size: 11px; padding: 5px 6px 2px 3px; color: #333; }
+@media only screen and (max-width: 735px) {
+    #spectrum { width: 100%; }
+    #spectrum li { display: block; float: none; border-left: none; margin-right: 0; margin-bottom: 10px; height: 30px; width: 100%; background: #eee; }
+    #spectrum .hbar { padding-right: 1px; margin-left: 0; height: 30px; }
+	#spectrum .label { position: relative; top: -28px; float: right; font-size: 14px; font-weight: 100; }
+}
+
+#spectrum-sat { background: #ffbb82; }
+#spectrum-pufa { background: #ffa65c; }
+#spectrum-mufa { background: #ff8926; }
+#spectrum-ofat { background: #dd6a09; }
+#spectrum-na { background: #b294ff; }
+#spectrum-k { background: #fd8dff; }
+#spectrum-fiber { background: #6cee60; }
+#spectrum-sugar { background: #3bdb2c; }
+#spectrum-ocarbs { background: #25b218; }
+#spectrum-protein { background: #139aff; }

@@ -1,0 +1,35 @@
+/* Sheets */
+
+#sheets { clear: both; display: block; }
+#sheets .hero { width: 100%; height: 600px; display: block; clear: both; }
+@media only screen and (max-width: 735px) {
+	#sheets .hero { display: table; border-bottom: none; }
+}
+
+.panel, .context { display: inline-table; clear: both; }
+.panel { width: 40%; }
+.panel p { padding: 10px 0; line-height: 150%; }
+@media only screen and (max-width: 735px) {
+	.panel { display: table-footer-group; width: 100%; }
+	.context { display: table-header-group; }
+}
+
+.sheet { width: 300px; float: right; height: 560px; padding-top: 40px;  }
+.sheet.list li { color: #333; font-size: 12px; font-weight: 600; height: 30px; line-height: 30px; padding: 0 18px; }
+@media only screen and (max-width: 735px) {
+    .sheet { width: 90%; padding: 40px 5% 0; float: left; }
+	.sheet.list li { font-size: 14px; }
+}
+.sheet.list li.divider { border-bottom: 1px #bbb solid; }
+.sheet.list li.category { border-top: 1px #ddd solid; }
+.sheet.list li span { margin-left: 7px; }
+.sheet.list li.tab { font-weight: 300; padding-left: 33px !important; }
+.sheet.list li.double-tab { font-weight: 300; padding-left: 48px !important; }
+
+#fatcal-entry { font-weight: 600; float: right; font-size: 100%; }
+
+#vitamins-minerals li { font-weight: 300; color: #aaa !important; }
+#vitamins-minerals li .name { float: right; font-size: 100%; }
+#vitamins-minerals li.category { margin-top: 10px; padding-top: 10px; }
+#vitamins-minerals li.present { color: #333 !important; font-weight: 600; }
+#vitamins-minerals li.significant { color: #333 !important; font-weight: 600; background-image: url('../images/star.svg'); background-position: left 44%; background-repeat: no-repeat; background-size: 12px; }

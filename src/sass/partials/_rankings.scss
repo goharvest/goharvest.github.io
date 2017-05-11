@@ -1,0 +1,72 @@
+/* Rankings */
+
+#rankings { background: #f8f8f8; color: #222; display: block; clear: both; width: 100%; text-align: center;  }
+#rankings .section-centered { padding: 0 0 90px; }
+#rankings .context { width: 800px; }
+#rankings .context h1 { color: #333; }
+#rankings .context p { color: #666; }
+@media only screen and (max-width: 735px) {
+	#rankings .context { width: 90%; }
+	#rankings .section-centered { padding: 0 0 20px; }
+}
+
+#blocks { text-align: left; padding: 50px 0 0 40px; }
+#blocks .block { display: inline-block; width: 45%; margin-bottom: 40px; }
+#blocks .block:nth-child(odd) { margin-right: 9.5%; }
+@media only screen and (max-width: 1024px) {
+	#blocks .block:nth-child(odd) { margin-right: 7%; }
+}
+@media only screen and (max-width: 735px) {
+	#blocks { padding: 50px 20px 0; }
+	#blocks .block { display: block; width: 100%; }
+	#blocks .block:nth-child(odd) { margin-right: 0; }
+}
+.rank-entry { display: block; padding: 6px 0; }
+.rank-entry .hbar-background { float: left; display: inline-block; height: 5px; overflow: hidden; background: #eee; }
+.rank-entry .hbar { float: left; height: 100%; }
+.rank-entry .hbar-label { float: left; font-weight: 600; display: inline-block; margin-left: 10px; font-size: 13px; line-height: 5px; }
+.rank-entry .name { clear: both; display: block; padding-top: 5px; font-size: 11px; color: #666; }
+@media only screen and (max-width: 735px) {
+    .rank-entry .hbar-background { height: 6px; border-radius: 3px; }
+    .rank-entry .hbar { border-radius: 3px; }
+	.rank-entry .hbar-label { font-size: 12px; float: right; position: relative; top: 8px; margin-bottom: -5px; }
+	.rank-entry .name { font-size: 12px; }
+}
+.rank-entry.total .name, .rank-entry.total .hbar-label { font-weight: 600; color: #333; }
+#rank-cal .rank-entry.total .hbar { background: #5d6960; }
+#rank-cal .hbar { background: #8f9891; }
+#rank-carbs .rank-entry.total .hbar { background: #1fc110; }
+#rank-carbs .hbar { background: #89ec88; }
+#rank-fat .rank-entry.total .hbar { background: #ff8926; }
+#rank-fat .hbar { background: #ffc385; }
+#rank-protein .rank-entry.total .hbar { background: #139aff; }
+#rank-protein .hbar { background: #9ad4ff; }
+
+.rank-entry .delta { float: left; margin-left: 8px; padding-left: 12px; background-position: left center; background-size: 10px 5px; background-repeat: no-repeat; line-height: 5px; display: inline-block; color: #fff; font-size: 13px; }
+.rank-entry .delta.positive { color: #1ba70e; background-image: url('../images/increase.svg'); }
+.rank-entry .delta.negative { color: #d03b3b; background-image: url('../images/decrease.svg'); }
+.rank-entry .delta.none { display: none; }
+@media only screen and (max-width: 735px) {
+    .rank-entry .delta { font-size: 12px; float: right; position: relative; top: 8px; margin-bottom: -5px; right: 15%; }
+}
+
+#blocks.delta-view-as-value .rank-entry .delta .delta-p,
+#blocks.delta-view-as-value .rank-entry .delta .delta-m,
+#blocks.delta-view-as-percent .rank-entry .delta .delta-v,
+#blocks.delta-view-as-percent .rank-entry .delta .delta-m,
+#blocks.delta-view-as-multiple .rank-entry .delta .delta-p,
+#blocks.delta-view-as-multiple .rank-entry .delta .delta-v { display: none; }
+
+#delta-view-control { display: none; margin-top: 20px; padding-top: 30px; border-top: 1px solid #e7e7e7; font-size: 10px; }
+#delta-view-control li { display: inline; margin-left: 15px; color: #a3a3a3; }
+#delta-view-control li:first-child { margin-left: 0; color: #555; }
+#delta-view-control li.switch:hover { cursor: pointer; color: #009fff; }
+#delta-view-control.delta-view-as-value #delta-view-as-value { cursor: default; color: #009fff;}
+#delta-view-control.delta-view-as-percent #delta-view-as-percent { cursor: default; color: #009fff; }
+#delta-view-control.delta-view-as-multiple #delta-view-as-multiple { cursor: default; color: #009fff; }
+
+li.dummy { background: #eee; padding: 30px 0; text-align: center; color: #888; }
+
+#cal-rankings h2 { color: #000; }
+#cal-rankings .rank-entry label { color: rgba(0,0,0,0.8); }
+#cal-rankings .rank-entry.total label, #cal-rankings .rank-entry.total .hbar-label { color: #000; }

@@ -1,0 +1,10 @@
+/* LAYOUT */
+
+
+input { text-align: right; box-shadow: none; background: transparent; }
+input:focus { outline: 0; }
+
+.section-centered { width: 1000px; position: relative; left: 50%; margin-left: -500px; }
+@media only screen and (max-width: 1024px) {
+	.section-centered { width: 100%; left: 0; margin-left: 0; }
+}

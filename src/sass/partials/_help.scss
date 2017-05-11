@@ -1,0 +1,24 @@
+/* HELP */
+
+.popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); font-size: 13px; z-index: 9998; }
+@supports ((-webkit-backdrop-filter: initial) or (backdrop-filter: initial)) {
+	.popup { -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); background-color: rgba(0,0,0,0.8); }
+}
+.popup-container { text-align: left; }
+.popup-control.close { display: block; float: right; background-image: url("../images/remove.svg"); background-position: top left; background-repeat: no-repeat; background-size: auto 25px; width: 25px; height: 25px; cursor: pointer; }
+.popup-control.close:hover { background-position: -50px 0px; }
+.popup h1 { font-size: 30px; color: #3dba21; margin-bottom: 30px; }
+.popup h2 { color: #ccc; margin-bottom: 20px; }
+.popup ol { padding-left: 20px; color: #ccc; clear: both; }
+.popup li { list-style-type: decimal; padding-bottom: 15px; padding-left: 10px; }
+.popup li:last-child { padding-bottom: 0; }
+.popup div { margin-bottom: 20px; color: #ccc; }
+.popup div:last-of-type { margin-bottom: 0; }
+.popup hr { height: 1px; background: #aaa; margin: 30px 0; border: none; }
+
+#help .popup-container { display: block; width: 90%; margin-left: 5%; margin-top: 30px; height: 80%; overflow: scroll; }
+.popup-control.help.open { margin-left: 8px; display: inline-block; width: 16px; height: 16px; background-image: url('../images/help.svg'); background-position: 0px 0px; background-repeat: no-repeat; background-size: 32px 16px; }
+.popup-control.help.open:hover { background-position: -16px 0px; cursor: pointer; }
+@media only screen and (max-width: 735px) {
+    .popup-control.help.open { position: relative; top: 2px; }
+}
