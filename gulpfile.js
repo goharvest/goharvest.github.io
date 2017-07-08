@@ -11,7 +11,7 @@ var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var autoprefixer = require('gulp-autoprefixer');
 var header = require('gulp-header');
-var closureCompiler = require('gulp-closure-compiler');
+var uglify = require('gulp-uglify');
 
 // options
 var sassOptions = {
@@ -27,17 +27,15 @@ var autoprefixerOptions = {
 gulp.task('scripts', scripts);
 
 function scripts(done) {
-    
+        
   var banner = ['/* Harvest v2.3 | (c) 2017 Brandon J. C. Fuller, All Rights Reserved | Requires jQuery 3.1.1 (jquery.org), jQuery UI 1.12.1 (jqueryui.com), and Velocity.js 1.3.1 (velocityjs.org) */'].join('\n')
   
   gulp.src('./src/js/*.js')
     .pipe(jshint(done))
     .pipe(jshint.reporter('default'));
 	gulp.src('./src/js/*.js')
-    .pipe(closureCompiler({
-      compilerPath: 'node_modules/google-closure-compiler/compiler.jar',
-      fileName: 'harvest.built.js'
-    }))
+    .pipe(concat('harvest.built.js'))
+    .pipe(uglify())
     .pipe(header(banner))
     .pipe(gulp.dest('./js/'));
     
