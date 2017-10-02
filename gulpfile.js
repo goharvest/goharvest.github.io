@@ -35,7 +35,7 @@ function scripts(done) {
     .pipe(jshint.reporter('default'));
 	gulp.src('./src/js/*.js')
     .pipe(concat('harvest.built.js'))
-    .pipe(uglify())
+    //.pipe(uglify())
     .pipe(header(banner))
     .pipe(gulp.dest('./js/'));
     
