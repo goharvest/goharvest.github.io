@@ -2,12 +2,16 @@
 	version 3
 
 	(c) 2017 Brandon J. C. Fuller. All Rights Reserved.		
+    
+    Requires awesomeplete.js (https://leaverou.github.io/awesomplete/)
 	
 */
 
-(function($){
+(function(){
 
-    // Set up a few things...
+    /*
+     * Set up a few things...
+     */
     var H = {
         data : {},
         items : [],
@@ -29,7 +33,64 @@
             }
         }
     };
-
+    
+    
+    /*
+     * Helper functions
+     */
+    class Helper {
+        
+        /*
+         * Add an input
+         * @param form el the form to add the input to
+         */
+        static addInput(form) {
+            var el, input, amount, unit, remove;
+            
+            // Create row div
+            el = document.createElement('div');
+            
+            // Create input
+            input = document.createElement('input');
+            input.type = "text";
+            input.className = "item";
+            input.placeholder = "Enter ingredient";
+            el.appendChild(input);
+            
+            // Create amount
+            amount = document.createElement('input');
+            amount.type = "text";
+            amount.className = "amount";
+            el.appendChild(amount);
+            
+            // Create
+            
+            // Create remove control
+            remove = document.createElement('button');
+            remove.type = "button";
+            remove.innerHTML = "Remove";
+            remove.addEventListener('click', function() {
+                this.parentNode.classList.add('removed');
+            });
+            el.appendChild(remove);
+            
+            // Append div to form
+            form.appendChild(el);
+            
+            // Initiate awesomplete on input
+            new Awesomplete(input, {
+                list: H.items,
+                autoFirst: true
+            });
+            
+            // Focus input
+            input.focus();
+        }
+        
+    }
+    
+    
+    // Go get data once the page loads
     window.addEventListener('load', getData(parse), false);
     
 
@@ -90,27 +151,6 @@
         
     }
     
-    class controls {
-        
-        /*
-         * Add an input
-         * @param form el the form to add the input to
-         */
-        static addInput(form) {
-            var el = document.createElement('input');
-            el.type = "text";
-            el.placeholder = "Enter ingredient";
-            $(el).autocomplete({
-                source: H.items,
-                autoFocus: true, 
-                delay: 0 
-            });
-            form.appendChild(el);
-            el.focus();
-        }
-        
-    }
-    
     
     /*
      * Initialize the page
@@ -119,19 +159,55 @@
         
         console.log(H);
         
-        var form = document.getElementById('input');
+        var form = document.getElementById('form');
         
         // Add an initial input box to the page
-        controls.addInput(form);
+        Helper.addInput(form);
         
         // Bind listener to Add Input button
         form.querySelector('#add').addEventListener('click', function(){
-            controls.addInput(form)
+            Helper.addInput(form)
+        }, false);
+        
+        // Bind listener to Submit button
+        form.querySelector('#submit').addEventListener('click', function(){
+            submit(form);
         }, false);
         
 
     }
     
     
+    /*
+     * Handle submit
+     * @param form el the submit form div
+     */
+    function submit(form) {
+        
+        console.log('submitted');
+        
+        var S = {
+                data : {},
+                items : []
+            };
+        
+        var inputs, i, name, key;
+        
+        inputs = form.querySelectorAll('input.item');
+        for (i=0; i<inputs.length; i++) {
+            name = inputs[i].value;
+            if (name) {
+                key = name.replace(/\s/g, '');
+                S.items.push(name);
+                S.data[key] = H.data[key];
+            }
+        }
+        
+        console.log(S);
+            
+        
+    }
     
-})(jQuery);
+    
+    
+})();
