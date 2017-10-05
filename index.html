@@ -10,7 +10,13 @@
 		<link rel="icon" type="image/png" href="images/favicon.png">
 		<title>Harvest</title>
 		<!--<link rel="stylesheet" href="css/styles.built.css" media="all">-->
-        <link rel="stylesheet" href="css/awesomplete.css" media="all">
+        <link rel="stylesheet" href="css/jquery-ui.theme.min.css" media="all">
+        <style>
+            .hidden,
+            .removed {
+                display: none;
+            }
+        </style>
 	</head>
 	
 	<body>
@@ -22,9 +28,11 @@
         <div id="form">
             <button id="add" type="button">Add</button>
             <button id="submit" type="button">Submit</button>
+            <input id="servings" type="text" value="1">
         </div>
         
-        <script type="text/javascript" src="js/awesomplete.min.js"></script>
+        <script type="text/javascript" src="js/jquery-3.2.1.slim.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/harvest.built.js"></script>	
         
 	</body>

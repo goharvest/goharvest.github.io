@@ -3,11 +3,10 @@
 
 	(c) 2017 Brandon J. C. Fuller. All Rights Reserved.		
     
-    Requires awesomeplete.js (https://leaverou.github.io/awesomplete/)
 	
 */
 
-(function(){
+(function($){
 
     /*
      * Set up a few things...
@@ -16,6 +15,7 @@
         data : {},
         items : [],
         metrics : [],
+        exclude : ['name', 'serving', 'unit', 'mass'],
         units : {
             v : ['ml','tsp','tbsp','fl oz', 'cup', 'pint', 'quart'],
 			w : ['g','oz','lb'],
@@ -45,46 +45,127 @@
          * @param form el the form to add the input to
          */
         static addInput(form) {
-            var el, input, amount, unit, remove;
+            var el, parts = {};
             
             // Create row div
             el = document.createElement('div');
+            el.className = 'entry';
             
             // Create input
-            input = document.createElement('input');
-            input.type = "text";
-            input.className = "item";
-            input.placeholder = "Enter ingredient";
-            el.appendChild(input);
+            parts.input = document.createElement('input');
+            parts.input.type = 'text';
+            parts.input.className = 'item';
+            parts.input.placeholder = 'Enter ingredient';
+            el.appendChild(parts.input);
             
             // Create amount
-            amount = document.createElement('input');
-            amount.type = "text";
-            amount.className = "amount";
-            el.appendChild(amount);
+            parts.amount = document.createElement('input');
+            parts.amount.type = 'text';
+            parts.amount.className = 'amount hidden';
+            parts.amount.value = '1';
+            el.appendChild(parts.amount);
             
-            // Create
-            
+            parts.units = document.createElement('select');
+            parts.units.className = 'units hidden';
+            el.appendChild(parts.units);
+                        
             // Create remove control
-            remove = document.createElement('button');
-            remove.type = "button";
-            remove.innerHTML = "Remove";
-            remove.addEventListener('click', function() {
+            parts.remove = document.createElement('button');
+            parts.remove.type = 'button';
+            parts.remove.innerHTML = 'Remove';
+            parts.remove.className = 'hidden';
+            parts.remove.addEventListener('click', function() {
                 this.parentNode.classList.add('removed');
             });
-            el.appendChild(remove);
+            el.appendChild(parts.remove);
             
             // Append div to form
             form.appendChild(el);
             
-            // Initiate awesomplete on input
-            new Awesomplete(input, {
-                list: H.items,
-                autoFirst: true
+            // Initiate autocomplete
+            $(parts.input).autocomplete({
+                source: H.items,
+                autoFocus: true, 
+                delay: 0,
+                select: function(event, ui){ 
+                    parts.input.value = ui.item.value;
+                    Helper.buildUnitList(parts);
+                }
             });
             
             // Focus input
-            input.focus();
+            parts.input.focus();
+        }
+        
+        
+        /*
+         * Build the units select menu and display hidden parts
+         * @param parts obj the entry's DOM parts
+         */
+        static buildUnitList(parts) {
+            var ul, output = '';
+            
+            ul = Helper.getProperUnits(parts.input);
+                                    
+            for(var i=0; i<ul.length; i++) {
+                output += '<option value="' + ul[i].replace(/\s/g, '') + '">' + ul[i] + '</option>';
+            }
+            parts.units.innerHTML = output;
+            
+            parts.units.value = H.data[parts.input.value.replace(/\s/g, '')].unit;
+                        
+            parts.units.classList.remove('hidden');
+            parts.amount.classList.remove('hidden');
+            parts.remove.classList.remove('hidden');
+            
+        }
+        
+        
+        /*
+         * Return the proper units for the selected item
+         * @param input el the item input
+         * @return arr an array with the available units
+         */
+        static getProperUnits(input) {           
+            var item, unit;
+            
+            item = input.value.replace(/\s/g, '');
+            unit = H.data[item].unit;
+                                    
+            if (H.units.w.indexOf(unit) > -1) {
+                return H.units.w;
+            } else if (H.units.v.indexOf(unit) > -1) {
+                return H.units.v;
+            } else {
+                unit = [unit];
+                return unit;
+            }
+            
+        }
+        
+        
+        static doConversion(S, item, conv) {
+                        
+            var data = {}, m, x, y;
+            
+            x = S.specs[item].unit;
+            y = H.data[item].unit;
+                        
+            for (var i=0; i<H.metrics.length; i++) {
+                m = H.metrics[i];
+                data[m] = H.data[item][m].replace('%', '');
+                
+                // Convert original data to new units, but only if there's something to convert to
+                if (H.units.w.indexOf(x) > -1 || H.units.v.indexOf(x) > -1) {
+                    data[m] *= H.units.conv[x][y];
+                }
+                
+                // Adjust for entered amount and servings
+                data[m] = data[m] / H.data[item].serving * S.specs[item].amount / S.servings;
+            }
+            
+            return data;
+            
         }
         
     }
@@ -121,18 +202,19 @@
      * @param data obj the raw data
      */
     function parse(data) {
-        var data, entries, name, parsed = {};
+        var entries, entry, name, parsed = {};
         
         data = JSON.parse(data);
         entries = data.feed.entry;
                         
         for(var i=0; i<entries.length; i++) {
                      
-            var entry = {};
+            entry = {};
             
             for (var key in entries[i]) {
-                if (key.includes('gsx$') && key != 'gsx$name' ) {
+                if (key.includes('gsx$') && key != 'gsx$name') {
                     entry[key.replace('gsx$', '')] = entries[i][key].$t;
+                    
                 }
             }
                         
@@ -141,9 +223,11 @@
             parsed[name.replace(/\s/g, '')] = entry;
             
         }  
-        
+                
         for (var x in entry) {
-            H.metrics.push(x);
+            if (H.exclude.indexOf(x) == -1) {
+                H.metrics.push(x);
+            }
         }
                 
         H.data = parsed;
@@ -157,7 +241,7 @@
      */
     function init() {
         
-        console.log(H);
+        console.log('H', H);
         
         var form = document.getElementById('form');
         
@@ -166,7 +250,7 @@
         
         // Bind listener to Add Input button
         form.querySelector('#add').addEventListener('click', function(){
-            Helper.addInput(form)
+            Helper.addInput(form);
         }, false);
         
         // Bind listener to Submit button
@@ -179,35 +263,63 @@
     
     
     /*
-     * Handle submit
+     * Handle the submit
      * @param form el the submit form div
      */
     function submit(form) {
         
         console.log('submitted');
         
+        var entries, name, amount, unit, key, totals = [], i, x;
+        
         var S = {
-                data : {},
-                items : []
+                specs : {},
+                servings : document.getElementById('servings').value,
+                totals : {}
             };
         
-        var inputs, i, name, key;
-        
-        inputs = form.querySelectorAll('input.item');
-        for (i=0; i<inputs.length; i++) {
-            name = inputs[i].value;
+        // Gather all entries and populate S with the information
+        entries = form.querySelectorAll('div.entry:not(.removed)');
+
+        for (i=0; i<entries.length; i++) {
+            
+            name = entries[i].querySelector('input.item').value;
+            
             if (name) {
+                
+                amount = entries[i].querySelector('input.amount').value;
+                unit = entries[i].querySelector('select.units').value;
+                                
                 key = name.replace(/\s/g, '');
-                S.items.push(name);
-                S.data[key] = H.data[key];
+                
+                S.specs[key] = {
+                    name : name,
+                    amount : amount,
+                    unit : unit
+                };
+                   
+                // Send data out for unit/amount conversion
+                S.specs[key].data = Helper.doConversion(S, key);
+            }
+        }
+                    
+        // Add metrics together across items
+        for (x in S.specs) {
+            totals.push(S.specs[x].data);
+        }
+                
+        for (i=0; i<totals.length; i++) {
+            for (x in totals[i]) {
+                S.totals[x] = (S.totals[x] || 0) + totals[i][x];
             }
         }
         
-        console.log(S);
-            
+        console.log('S', S);
         
-    }
+        
+    }     
     
     
     
-})();
+    
+})(jQuery);
