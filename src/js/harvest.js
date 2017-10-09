@@ -16,6 +16,7 @@
         items : [],
         metrics : [],
         exclude : ['name', 'serving', 'unit', 'mass'],
+        undo : [],
         units : {
             v : ['ml','tsp','tbsp','fl oz', 'cup', 'pint', 'quart'],
 			w : ['g','oz','lb'],
@@ -49,6 +50,8 @@
             
             // Create row div
             el = document.createElement('div');
+            var d = new Date();
+            el.id = d.getTime(); // assign unique identifier
             el.className = 'entry';
             
             // Create input
@@ -75,6 +78,8 @@
             parts.remove.innerHTML = 'Remove';
             parts.remove.className = 'hidden';
             parts.remove.addEventListener('click', function() {
+                H.undo.push(this.parentNode.id);
+                console.log(H.undo);
                 this.parentNode.classList.add('removed');
             });
             el.appendChild(parts.remove);
@@ -168,6 +173,25 @@
             
         }
         
+        static undo() {
+            
+            if (H.undo.length > 0) {
+                var id = H.undo.pop();
+                document.getElementById(id).classList.remove('removed');
+            }
+            
+        }
+        
+        static round(q,r) {
+            return Math.round(q/r)*r;
+        }
+        
+        static status(m) {
+            
+            document.getElementById('status').innerHTML = m;
+            
+        }
+        
     }
     
     
@@ -180,19 +204,23 @@
      * @param success func the callback function
      */
     function getData(success) {
-        var spreadsheetID, url, xmlhttp = new XMLHttpRequest();
+        var spreadsheetID, url, req = new XMLHttpRequest();
+        
+        Helper.status('Trying to retrieve data...');
 
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
-                success(xmlhttp.responseText);
+        req.onreadystatechange = function() {
+            if (req.readyState == XMLHttpRequest.DONE && req.status == 200) {
+                success(req.responseText);
+            } else if (req.status !== 0 && req.status != 200) {
+                Helper.status('Unable to retrieve data (Error ' + req.status + ')');
             }
         };
         
         spreadsheetID  = "1mmewbLHeNnSd0ZPk7aWNspydF5b6ZTH1oAHWy2VnOAc";
         url = "https://spreadsheets.google.com/feeds/list/" + spreadsheetID + "/default/public/values?alt=json";
-
-        xmlhttp.open('GET', url, true);
-        xmlhttp.send();
+        
+        req.open('GET', url, true);
+        req.send();
 
     }
     
@@ -203,6 +231,8 @@
      */
     function parse(data) {
         var entries, entry, name, parsed = {};
+        
+        Helper.status('Data retrieved');
         
         data = JSON.parse(data);
         entries = data.feed.entry;
@@ -243,6 +273,8 @@
         
         console.log('H', H);
         
+        Helper.status('Ready.');
+        
         var form = document.getElementById('form');
         
         // Add an initial input box to the page
@@ -258,6 +290,11 @@
             submit(form);
         }, false);
         
+        // Bind listener to Undo button
+        form.querySelector('#undo').addEventListener('click', function(){
+            Helper.undo();
+        }, false);
+        
 
     }
     
@@ -269,6 +306,8 @@
     function submit(form) {
         
         console.log('submitted');
+        
+        Helper.status('Submitted');
         
         var entries, name, amount, unit, key, totals = [], i, x;
         
@@ -314,10 +353,66 @@
             }
         }
         
-        console.log('S', S);
+        //console.log('S', S);
+        
+        doRounding(S);
+        
+    }   
+    
+    /*
+     * Round everything appropriately
+     * @param S obj the parsed submitted data
+     */
+    function doRounding(S) {
+        
+        console.log('rounding');
+        
+        var r = {}, t = S.totals, x;
+        
+        // Define rounding groupings
+        var fats = ['fat', 'sat', 'mufa', 'pufa'],
+            elcts = ['na', 'k'],
+            cp = ['carb', 'fiber', 'sugar', 'protein'],
+            vm = ['vita', 'vitc', 'vitd', 'vite', 'vitk', 'b1', 'b2', 'b3', 'b6', 'b9', 'b12', 'ca', 'cu', 'fe', 'iod', 'mg', 'mn', 'phos', 'se', 'zn'];            
+            
+        // Calories
+        r.cal = t.cal<5 ? 0 : t.cal<50 ? Helper.round(t.cal,5) : Helper.round(t.cal,10);
+        
+        // Calories from fat
+        r.fatcal = t.fat * 9;
+        r.fatcal = r.fatcal<5 ? 0 : r.fatcal<50 ? Helper.round(r.fatcal,5) : Helper.round(r.fatcal,10);
+        
+        // Fats
+        for (x in fats) {
+            r[fats[x]] = t[fats[x]]<0.5 ? 0 : t[fats[x]]<5 ? Helper.round(t[fats[x]],0.5) : Helper.round(t[fats[x]],1);  
+        }
+        
+        // Electrolytes
+        for (x in elcts) {
+            r[elcts[x]] = t[elcts[x]]<5 ? 0 : t[elcts[x]]<=140 ? Helper.round(t[elcts[x]],5) : Helper.round(t[elcts[x]],10);
+        }
+        
+        // Carbs and protein
+        for (x in cp) {
+            r[cp[x]] = t[cp[x]]<0.5 ? 0 : t[cp[x]]<1 ? '<1' : Helper.round(t[cp[x]],1);
+        }
+        
+        // Vitamins and minerals
+        for (x in vm) {
+            r[vm[x]] = t[vm[x]]<1 ? 0 : t[vm[x]]<2 ? 2 : t[vm[x]]<10 ? Helper.round(t[vm[x]],2) : t[vm[x]]<50 ? Helper.round(t[vm[x]],5) : Helper.round(t[vm[x]],10);
+        }
+        
+        // Other
+        r.solfib = Helper.round(t.solfib,1);
+        r.omega3 = Helper.round(t.omega3,0.5);
         
         
-    }     
+        S.adj = r;
+        
+        console.log(S);
+        
+        
+    }
     
     
     
