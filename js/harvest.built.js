@@ -1,4 +1,4 @@
-/* Harvest v2.3 | (c) 2017 Brandon J. C. Fuller, All Rights Reserved | Requires jQuery 3.1.1 (jquery.org), jQuery UI 1.12.1 (jqueryui.com), and Velocity.js 1.3.1 (velocityjs.org) *//*	HARVEST 
+/* Harvest v3 | (c) 2017 Brandon J. C. Fuller, All Rights Reserved | Requires jQuery and jQuery UI *//*	HARVEST 
 	version 3
 
 	(c) 2017 Brandon J. C. Fuller. All Rights Reserved.		
@@ -12,6 +12,7 @@
      * Set up a few things...
      */
     var H = {
+        gid : '1mmewbLHeNnSd0ZPk7aWNspydF5b6ZTH1oAHWy2VnOAc',
         data : {},
         items : [],
         metrics : [],
@@ -39,13 +40,14 @@
     /*
      * Helper functions
      */
-    class Helper {
+    var Helpers = {
         
         /*
          * Add an input
          * @param form el the form to add the input to
          */
-        static addInput(form) {
+        addInput: function(form) {
+            
             var el, parts = {};
             
             // Create row div
@@ -79,8 +81,8 @@
             parts.remove.className = 'hidden';
             parts.remove.addEventListener('click', function() {
                 H.undo.push(this.parentNode.id);
-                console.log(H.undo);
                 this.parentNode.classList.add('removed');
+                console.log('user removed item (id: ' + this.parentNode.id + ')');
             });
             el.appendChild(parts.remove);
             
@@ -94,23 +96,27 @@
                 delay: 0,
                 select: function(event, ui){ 
                     parts.input.value = ui.item.value;
-                    Helper.buildUnitList(parts);
+                    Helpers.buildUnitList(parts);
+                    console.log('user chose item "' + parts.input.value + '"');
                 }
             });
             
             // Focus input
             parts.input.focus();
-        }
+            
+            console.log('user added an input');
+            
+        },
         
         
         /*
          * Build the units select menu and display hidden parts
          * @param parts obj the entry's DOM parts
          */
-        static buildUnitList(parts) {
+         buildUnitList: function(parts) {
             var ul, output = '';
             
-            ul = Helper.getProperUnits(parts.input);
+            ul = Helpers.getProperUnits(parts.input);
                                     
             for(var i=0; i<ul.length; i++) {
                 output += '<option value="' + ul[i].replace(/\s/g, '') + '">' + ul[i] + '</option>';
@@ -123,7 +129,7 @@
             parts.amount.classList.remove('hidden');
             parts.remove.classList.remove('hidden');
             
-        }
+        },
         
         
         /*
@@ -131,7 +137,7 @@
          * @param input el the item input
          * @return arr an array with the available units
          */
-        static getProperUnits(input) {           
+        getProperUnits: function(input) {           
             var item, unit;
             
             item = input.value.replace(/\s/g, '');
@@ -146,10 +152,9 @@
                 return unit;
             }
             
-        }
+        },
         
-        
-        static doConversion(S, item, conv) {
+        doConversion: function(S, item, conv) {
                         
             var data = {}, m, x, y;
             
@@ -171,28 +176,23 @@
             
             return data;
             
-        }
+        },
         
-        static undo() {
+        undo: function() {
             
             if (H.undo.length > 0) {
                 var id = H.undo.pop();
                 document.getElementById(id).classList.remove('removed');
+                console.log('user undid removal (id: ' + id + ')');
             }
             
-        }
+        },
         
-        static round(q,r) {
+        round: function(q,r) {
             return Math.round(q/r)*r;
         }
         
-        static status(m) {
-            
-            document.getElementById('status').innerHTML = m;
-            
-        }
-        
-    }
+    };
     
     
     // Go get data once the page loads
@@ -206,18 +206,17 @@
     function getData(success) {
         var spreadsheetID, url, req = new XMLHttpRequest();
         
-        Helper.status('Trying to retrieve data...');
+       console.log('trying to retrieve data...');
 
         req.onreadystatechange = function() {
             if (req.readyState == XMLHttpRequest.DONE && req.status == 200) {
                 success(req.responseText);
             } else if (req.status !== 0 && req.status != 200) {
-                Helper.status('Unable to retrieve data (Error ' + req.status + ')');
+                console.log('unable to retrieve data (Error ' + req.status + ')');
             }
         };
         
-        spreadsheetID  = "1mmewbLHeNnSd0ZPk7aWNspydF5b6ZTH1oAHWy2VnOAc";
-        url = "https://spreadsheets.google.com/feeds/list/" + spreadsheetID + "/default/public/values?alt=json";
+        url = "https://spreadsheets.google.com/feeds/list/" + H.gid + "/default/public/values?alt=json";
         
         req.open('GET', url, true);
         req.send();
@@ -232,7 +231,7 @@
     function parse(data) {
         var entries, entry, name, parsed = {};
         
-        Helper.status('Data retrieved');
+        console.log('data retrieved, attempting to parse...');
         
         data = JSON.parse(data);
         entries = data.feed.entry;
@@ -261,6 +260,10 @@
         }
                 
         H.data = parsed;
+        
+        console.log('H', H);
+        console.log('done parsing, continuing on to init');
+        
         init();
         
     }
@@ -271,31 +274,31 @@
      */
     function init() {
         
-        console.log('H', H);
+        console.log('init...');
         
-        Helper.status('Ready.');
-        
-        var form = document.getElementById('form');
+        var form = document.getElementById('form'),
+            controls = document.getElementById('controls');
         
         // Add an initial input box to the page
-        Helper.addInput(form);
+        Helpers.addInput(form);
         
         // Bind listener to Add Input button
-        form.querySelector('#add').addEventListener('click', function(){
-            Helper.addInput(form);
+        controls.querySelector('#add').addEventListener('click', function(){
+            Helpers.addInput(form);
         }, false);
         
         // Bind listener to Submit button
-        form.querySelector('#submit').addEventListener('click', function(){
+        controls.querySelector('#submit').addEventListener('click', function(){
             submit(form);
         }, false);
         
         // Bind listener to Undo button
-        form.querySelector('#undo').addEventListener('click', function(){
-            Helper.undo();
+        controls.querySelector('#undo').addEventListener('click', function(){
+            Helpers.undo();
         }, false);
         
-
+        console.log('done initializing, waiting for user input');
+        
     }
     
     
@@ -305,9 +308,7 @@
      */
     function submit(form) {
         
-        console.log('submitted');
-        
-        Helper.status('Submitted');
+        console.log('user submitted, attempting to parse input...');
         
         var entries, name, amount, unit, key, totals = [], i, x;
         
@@ -338,7 +339,7 @@
                 };
                    
                 // Send data out for unit/amount conversion
-                S.specs[key].data = Helper.doConversion(S, key);
+                S.specs[key].data = Helpers.doConversion(S, key);
             }
         }
                     
@@ -353,11 +354,13 @@
             }
         }
         
-        //console.log('S', S);
-        
+        console.log('done parsing user input, continuing on');
+                
         doRounding(S);
+        displayGlances(S);
         
     }   
+    
     
     /*
      * Round everything appropriately
@@ -365,7 +368,7 @@
      */
     function doRounding(S) {
         
-        console.log('rounding');
+        console.log('doing rounding...');
         
         var r = {}, t = S.totals, x;
         
@@ -376,41 +379,88 @@
             vm = ['vita', 'vitc', 'vitd', 'vite', 'vitk', 'b1', 'b2', 'b3', 'b6', 'b9', 'b12', 'ca', 'cu', 'fe', 'iod', 'mg', 'mn', 'phos', 'se', 'zn'];            
             
         // Calories
-        r.cal = t.cal<5 ? 0 : t.cal<50 ? Helper.round(t.cal,5) : Helper.round(t.cal,10);
+        r.cal = t.cal<5 ? 0 : t.cal<50 ? Helpers.round(t.cal,5) : Helpers.round(t.cal,10);
         
         // Calories from fat
         r.fatcal = t.fat * 9;
-        r.fatcal = r.fatcal<5 ? 0 : r.fatcal<50 ? Helper.round(r.fatcal,5) : Helper.round(r.fatcal,10);
+        r.fatcal = r.fatcal<5 ? 0 : r.fatcal<50 ? Helpers.round(r.fatcal,5) : Helpers.round(r.fatcal,10);
         
         // Fats
         for (x in fats) {
-            r[fats[x]] = t[fats[x]]<0.5 ? 0 : t[fats[x]]<5 ? Helper.round(t[fats[x]],0.5) : Helper.round(t[fats[x]],1);  
+            r[fats[x]] = t[fats[x]]<0.5 ? 0 : t[fats[x]]<5 ? Helpers.round(t[fats[x]],0.5) : Helpers.round(t[fats[x]],1);  
         }
         
         // Electrolytes
         for (x in elcts) {
-            r[elcts[x]] = t[elcts[x]]<5 ? 0 : t[elcts[x]]<=140 ? Helper.round(t[elcts[x]],5) : Helper.round(t[elcts[x]],10);
+            r[elcts[x]] = t[elcts[x]]<5 ? 0 : t[elcts[x]]<=140 ? Helpers.round(t[elcts[x]],5) : Helpers.round(t[elcts[x]],10);
         }
         
         // Carbs and protein
         for (x in cp) {
-            r[cp[x]] = t[cp[x]]<0.5 ? 0 : t[cp[x]]<1 ? '<1' : Helper.round(t[cp[x]],1);
+            r[cp[x]] = t[cp[x]]<0.5 ? 0 : t[cp[x]]<1 ? '<1' : Helpers.round(t[cp[x]],1);
         }
         
         // Vitamins and minerals
         for (x in vm) {
-            r[vm[x]] = t[vm[x]]<1 ? 0 : t[vm[x]]<2 ? 2 : t[vm[x]]<10 ? Helper.round(t[vm[x]],2) : t[vm[x]]<50 ? Helper.round(t[vm[x]],5) : Helper.round(t[vm[x]],10);
+            r[vm[x]] = t[vm[x]]<1 ? 0 : t[vm[x]]<2 ? 2 : t[vm[x]]<10 ? Helpers.round(t[vm[x]],2) : t[vm[x]]<50 ? Helpers.round(t[vm[x]],5) : Helpers.round(t[vm[x]],10);
         }
         
         // Other
-        r.solfib = Helper.round(t.solfib,1);
-        r.omega3 = Helper.round(t.omega3,0.5);
+        r.solfib = Helpers.round(t.solfib,1);
+        r.omega3 = Helpers.round(t.omega3,0.5);
         
         
         S.adj = r;
         
-        console.log(S);
+        console.log('S', S);
+        console.log('done with rounding');
         
+    }
+    
+    
+    /*
+     * Display glances
+     * @param S obj the parsed submitted data
+     */
+    function displayGlances(S) {
+        
+        console.log('displaying glances...');
+        
+        var glances, ul, x, li, div, p, el;
+        
+        glances = {
+            'Calories' : S.adj.cal,
+            'Saturated Fat' : S.adj.sat,
+            'Fiber' : S.adj.fiber,
+            'Sugar' : S.adj.sugar,
+            'Protein' : S.adj.protein
+        };
+        
+        ul = document.createElement('ul');
+        
+        for (x in glances) {
+            
+            li = document.createElement('li');
+            
+            div = document.createElement('div');
+            div.className = 'glances-value';
+            div.innerHTML = glances[x];
+            li.appendChild(div);
+            
+            p = document.createElement('p');
+            p.className = 'glances-caption';
+            p.innerHTML = x;
+            li.appendChild(p);
+            
+            ul.appendChild(li);
+            
+        }
+        
+        el = document.getElementById('glances');
+        el.innerHTML = '';
+        el.appendChild(ul);
+        
+        console.log('done displaying glances');
         
     }
     
