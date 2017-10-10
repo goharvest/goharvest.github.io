@@ -1,0 +1,17 @@
+/* ==============================
+   TYPEOGRAPHY
+   ============================== */
+
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,600|Hind:400,600,700") all;
+
+$header: 'Roboto', sans-serif;
+$body: 'Hind', sans-serif;
+
+$maxtypewidth: 750px;
+
+html {
+    font-family: $body;
+    font-weight: normal;
+    font-size: 16px;
+    color: $black;
+}

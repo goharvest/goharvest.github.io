@@ -9,7 +9,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="icon" type="image/png" href="images/favicon.png">
 		<title>Harvest</title>
-		<!--<link rel="stylesheet" href="css/styles.built.css" media="all">-->
+		<link rel="stylesheet" href="css/styles.built.css" media="all">
         <link rel="stylesheet" href="css/jquery-ui.theme.min.css" media="all">
         <style>
             .hidden,
@@ -25,31 +25,29 @@
         <!-- For debugging -->
         <div id="status"></div>
         
-        <section id="user-input">
-		
-            <div id="form"></div>
+        <main>
+        
+            <section id="user-input">
 
-            <div id="servings-form">
-                <label for="servings">Servings</label>
-                <input id="servings" type="text" value="1">
-            </div>
+                <div id="form"></div>
 
-            <div id="controls">
-                <button id="add" type="button">Add</button>
-                <button id="undo" type="button">Undo</button>
-                <button id="submit" type="button">Submit</button>
-            </div>
-            
-        </section>
+                <div id="servings-form">
+                    <label for="servings">Servings</label>
+                    <input id="servings" type="text" value="1">
+                </div>
+
+                <div id="controls">
+                    <button id="add" type="button">Add</button>
+                    <button id="undo" type="button">Undo</button>
+                    <button id="submit" type="button">Submit</button>
+                </div>
+
+            </section>
+
+            <section id="glances"></section>
         
-        <section id="glances">
-        
-            
-            
-        </section>
-        
-        
-        
+        </main>
+    
         <script type="text/javascript" src="js/jquery-3.2.1.slim.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/harvest.built.js"></script>	

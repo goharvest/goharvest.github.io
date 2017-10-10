@@ -154,7 +154,7 @@
             
         },
         
-        doConversion: function(S, item, conv) {
+        doConversion: function(S, item) {
                         
             var data = {}, m, x, y;
             
@@ -204,7 +204,7 @@
      * @param success func the callback function
      */
     function getData(success) {
-        var spreadsheetID, url, req = new XMLHttpRequest();
+        var url, req = new XMLHttpRequest();
         
        console.log('trying to retrieve data...');
 
@@ -463,8 +463,6 @@
         console.log('done displaying glances');
         
     }
-    
-    
     
     
 })(jQuery);

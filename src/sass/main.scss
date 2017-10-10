@@ -8,22 +8,17 @@ table { border-collapse: collapse; border-spacing: 0; }
 article,aside,section,footer,nav,iframe { display: block; }
 
 
+/* Colors */
+
+$white: #fff;
+$lightgrey: #ddd;
+$black: #000;
+
+$blue: #0060fa;
+$blue-shade: #004ecc;
+
 /* Imports */
 
-@import 'partials/fonts';
+@import 'partials/typography';
 @import 'partials/layout';
-@import 'partials/header';
-@import 'partials/recipe-drawer';
-@import 'partials/recipe-banner';
-@import 'partials/hero';
-@import 'partials/help';
-@import 'partials/footer';
-@import 'partials/input';
-@import 'partials/output';
-@import 'partials/glances';
-@import 'partials/spectrum';
-@import 'partials/sheets';
-@import 'partials/caloric-ratio';
-@import 'partials/rankings';
-@import 'partials/additional-info';
-@import 'partials/recipe-file';
+@import 'partials/userinput';
