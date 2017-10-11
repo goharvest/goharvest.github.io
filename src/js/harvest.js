@@ -36,6 +36,55 @@
         }
     };
     
+    /*
+     * Autocomplete
+     */
+    var AC = {
+        
+        init: function(el) {
+            
+            var e = {
+                el : el,
+                parent : el.parentNode,
+                ul : document.createElement('ul')
+            };
+            
+            e.ul.className = 'autocomplete';
+            e.parent.insertBefore(e.ul, e.el);
+            
+            e.el.addEventListener('input', function() {
+                AC.call(e);
+            });
+            
+        },
+        
+        call: function(e) {
+            
+            var val, list, re, i, li;
+            
+            val = e.el.value;
+            list = [];
+            re = new RegExp(val, 'i');
+                        
+            for (i in H.items) {
+                if (re.test(H.items[i])) {
+                    list.push(H.items[i]);
+                }
+            }
+                        
+            e.ul.innerHTML = '';
+            
+            for (i in list) {
+                li = document.createElement('li');
+                li.innerHTML = list[i];
+                e.ul.appendChild(li);    
+            }
+            
+            
+        }
+        
+    };
+    
     
     /*
      * Helper functions
@@ -89,7 +138,7 @@
             // Append div to form
             form.appendChild(el);
             
-            // Initiate autocomplete
+            /* Initiate autocomplete
             $(parts.input).autocomplete({
                 source: H.items,
                 autoFocus: true, 
@@ -99,10 +148,15 @@
                     Helpers.buildUnitList(parts);
                     console.log('user chose item "' + parts.input.value + '"');
                 }
-            });
+            }); */
             
             // Focus input
             parts.input.focus();
+            
+            // Initate autocomplete
+            AC.init(parts.input);
+            
+            
             
             console.log('user added an input');
             
