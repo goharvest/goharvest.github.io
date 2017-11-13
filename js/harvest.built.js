@@ -6,7 +6,7 @@
 	
 */
 
-(function($){
+(function(){
 
     /*
      * Set up a few things...
@@ -75,12 +75,47 @@
             e.ul.innerHTML = '';
             
             for (i in list) {
+                
                 li = document.createElement('li');
                 li.innerHTML = list[i];
-                e.ul.appendChild(li);    
+                
+                // Bind listeners in a closure
+                (function(_li, _e) {
+                    li.addEventListener('mouseover', function() {
+                        AC.hover(this, _e);
+                    });
+                    li.addEventListener('click', function() {
+                        AC.click(this, _e);
+                    });
+                })(li, e);
+                
+                e.ul.appendChild(li);
+                
             }
             
+            if (list.length) {
+                e.ul.firstChild.className = 'active';
+                e.ul.classList.add('active');
+            }
             
+        },
+        
+        hover: function(li, e) {            
+            var lis, i;
+            
+            lis = e.ul.querySelectorAll('li');
+            for (i=0; i<lis.length; i++) {
+                lis[i].className = '';
+            }
+            
+            li.className = 'active';
+            
+        },
+        
+        click: function(li, e) {
+            e.el.value = li.innerHTML;
+            e.ul.classList.remove('active');
+            e.ul.innerHTML = '';
         }
         
     };
@@ -137,18 +172,6 @@
             
             // Append div to form
             form.appendChild(el);
-            
-            /* Initiate autocomplete
-            $(parts.input).autocomplete({
-                source: H.items,
-                autoFocus: true, 
-                delay: 0,
-                select: function(event, ui){ 
-                    parts.input.value = ui.item.value;
-                    Helpers.buildUnitList(parts);
-                    console.log('user chose item "' + parts.input.value + '"');
-                }
-            }); */
             
             // Focus input
             parts.input.focus();
@@ -519,4 +542,4 @@
     }
     
     
-})(jQuery);
+})();
