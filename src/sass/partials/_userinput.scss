@@ -1,0 +1,80 @@
+/* ==============================
+   USER INPUT
+   ============================== */
+
+
+#user-input {
+    
+    & {
+        width: 600px;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    &:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+    
+    #form {
+        background: $white;
+        margin-bottom: 2rem;
+        border: 1px solid $lightgrey;
+    }
+    
+    div.entry {
+        
+        & {
+            position: relative;
+            height: 50px;
+            z-index: 1;
+        }
+        
+        &:not(:first-child) {
+            border-top: 1px solid $lightgrey;
+        }
+        
+        input.item {
+            height: 100%;
+            line-height: 100%;
+            padding: 0 1rem;
+            font-size: 1.3rem;
+        }
+        
+        input.item:focus {
+            outline: none;
+        }
+        
+    }
+    
+    #servings-form {
+        float: left;
+        clear: left;
+    }
+    
+    #controls {
+    
+        & {
+            float: right;
+        }
+        
+        button {
+            border: none;
+            background: $blue;
+            color: $white;
+            padding: .5rem 1rem;
+        }
+        
+        button:hover,
+        button:focus {
+            background: $blue-shade;
+            cursor: pointer;
+        }
+            
+        
+    }
+    
+    
+    
+}

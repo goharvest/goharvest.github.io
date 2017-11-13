@@ -1,1 +1,545 @@
-/* Harvest v2.3 | (c) 2017 Brandon J. C. Fuller, All Rights Reserved | Requires jQuery 3.1.1 (jquery.org), jQuery UI 1.12.1 (jqueryui.com), and Velocity.js 1.3.1 (velocityjs.org) */function pushUserData(e){for(i=0;i<numuseritems;i++)e.push(localStorage.getItem("useritem"+useritemsindex[i]).split(","));harvest(e)}function harvest(db){function round(e,t){return Math.round(e/t)*t}function add(e){var t=$("#cloner div.entry").clone();t.children("input.item").autocomplete({source:dbitems,autoFocus:!0,delay:0}),e?t.appendTo("#entries").velocity("slideDown",{duration:300,complete:function(){$(this).removeClass("clone").children("input.item").focus()}}):t.appendTo("#entries").removeClass("clone").children("input.item").focus()}function myRecipeClass(){numuseritems>0?$("#my-recipe-count").addClass("full"):($("#my-recipe-count").removeClass("full"),$("#recipe-drawer").slideUp())}function saveErrorCheck(errorName,errorAmount){if(""===errorName)return alert("Please enter a name for your recipe."),!0;if(errorName.search(",")!==-1)return alert("Sorry, but your recipe's name can't include commas."),!0;if(""===errorAmount||isNaN(eval(errorAmount)))return alert("Please enter a valid amount for your recipe."),!0;for(i=0;i<numuseritems;i++){var checkThis=new RegExp("^"+localStorage.getItem("useritem"+useritemsindex[i]).split(",")[0]+"$","i");if(checkThis.test(errorName))return alert("You already have a saved recipe with that name."),!0}}function confirmDelete(e){return!$("#confirm-delete").is(":checked")||confirm("Are you sure you want to permanently delete "+e+"? You won't be able to undo this.")}var dbL=db.length,labelsL=labels.length,dbitems=[],vols=["ml","tsp","tbsp","fl oz","cup","pint","quart"],wts=["g","oz","lb"],lastRank={},lastRankTotals={},specWidths={},undo=[],u=0,c=0,lastRankL=0,i,j,n,x,conv={ml:{ml:1,tsp:.2028,tbsp:.0676,floz:.0338,cup:.0042,pint:.0021,quart:.0011},tsp:{ml:4.93,tsp:1,tbsp:.3333,floz:.1666,cup:.0208,pint:.0104,quart:.0052},tbsp:{ml:14.79,tsp:3,tbsp:1,floz:.5,cup:.0625,pint:.0312,quart:.0156},floz:{ml:29.57,tsp:6,tbsp:2,floz:1,cup:.125,pint:.0624,quart:.0312},cup:{ml:236.59,tsp:48,tbsp:16,floz:8,cup:1,pint:.5,quart:.25},pint:{ml:473.18,tsp:96,tbsp:32,floz:16,cup:2,pint:1,quart:.5},quart:{ml:946.35,tsp:192,tbsp:64,floz:32,cup:4,pint:2,quart:1},g:{g:1,oz:.0353,lb:.0022},oz:{g:28.35,oz:1,lb:.0625},lb:{g:453.59,oz:16,lb:1}};for(i=0;i<dbL;i++)dbitems.push(db[i][0]);$(document).keypress(function(e){13==e.which&&($("#save-name").is(":focus")||$("#save-amount").is(":focus")||$("#save-units").is(":focus")?$("#save").click():"recipe-name"==document.activeElement.className?document.activeElement.blur():$("#submit").click())}),add(!1),$("#add").on("click",function(){add(!0)}),$("#entries").on("click","span.remove",function(){$(this).parent().velocity("slideUp",{duration:300,complete:function(){u++,$(this).attr("data-undo-level",u),undo.unshift(u),$("#undo").addClass("active")}})}),$("#undo").on("click",function(){1==undo.length&&$("#undo").removeClass("active"),$("#entries").find('[data-undo-level="'+undo[0]+'"]').velocity("slideDown",{duration:300,complete:function(){$(this).removeAttr("data-undo-level"),undo.shift()}})}),$("#entries").on("click","span.info",function(){var e=$(this).parent().children("div.infodata"),t="none"==e.css("display")?"slideDown":"slideUp";e.velocity(t,{duration:800,easing:[.075,.82,.165,1]}),$(this).toggleClass("opened")}),$(".popup-control.help").click(function(){$("#help").slideToggle("fast")}),$("#recipe-banner").click(function(){$("#table").velocity("scroll",{duration:800,easing:"ease-in-out",offset:-40})}),$("#entries").on("autocompleteclose",".item",function(){var e=$(this).parent().children("span.details");for(i=0;i<dbL;i++)if(db[i][0]==$(this).val()){if($.inArray(db[i][2],vols)!=-1)e.html(detailsHtmlVol),e.children(".units-list").val(db[i][2]).selectmenu();else if($.inArray(db[i][2],wts)!=-1)e.html(detailsHtmlWt),e.children(".units-list").val(db[i][2]).selectmenu();else{var t=db[i][2];e.html('<input type="text" class="amount" value="1"><span class="units">'+t+"</span>")}$(this).parent().children("span.info").css("display","inline-block");var a="<ul><li>Amounts per "+db[i][1]+" "+db[i][2]+":</li>";for(j=0;j<labelsL;j++)a+="<li>"+labels[j]+" "+Number(db[i][j+4].replace("%",""))+labelunits[j]+"</li>";return void $(this).parent().children("div.infodata").html(a+"</ul>")}}).change(),$("#full-details-list").on("mouseover","li",function(){$(this).parent().children("li").eq(0).addClass("highlight"),$("#extras .header li").eq($(this).index()).addClass("highlight")}),$("#full-details-list").on("mouseout","li",function(){$("#extras li").removeClass("highlight")}),$("#diet-picker li").click(function(){var e=$(this).attr("id");$("#diet-picker").attr("class",e),$("#cr-colchart").attr("class",e)}),$("#delta-view-control li").click(function(){var e=$(this).attr("id");$("#delta-view-control").attr("class",e),$("#blocks").attr("class",e)});var saveThis="",useritems="";$("#save-units").selectmenu(),$("#my-recipe-count").html(numuseritems),myRecipeClass(),$("#my-recipes").on("click","#my-recipe-count.full",function(){$("#recipe-drawer").toggle()});var myRecipesList="",thisUserRecipe=[],thisUserRecipeDate=new Date;for(i=numuseritems;i--;)thisUserRecipe=localStorage.getItem("useritem"+useritemsindex[i]).split(","),thisUserRecipeDate=new Date(Number(useritemsindex[i])),thisUserRecipeDate=thisUserRecipeDate.getMonth()+1+"/"+thisUserRecipeDate.getDay()+"/"+thisUserRecipeDate.getFullYear(),myRecipesList+='<li class="useritem" data-useritem-id="'+useritemsindex[i]+'"><input class="recipe-name" type="text" value="'+thisUserRecipe[0]+'"><span class="remove-recipe"></span><span class="recipe-date">'+thisUserRecipeDate+"</span></li>";$("#my-recipes-list").html(myRecipesList);var oldRecipeName="";$("#my-recipes-list").on("focus","input.recipe-name",function(){oldRecipeName=$(this).val()}),$("#my-recipes-list").on("change","input.recipe-name",function(){var e=$(this).val();if(saveErrorCheck(e,1))return void $(this).val(oldRecipeName);var t=$(this).parent().attr("data-useritem-id"),a=localStorage.getItem("useritem"+t).split(",");a[0]=e,localStorage.setItem("useritem"+t,a),dbitems[dbitems.indexOf(oldRecipeName)]=e}),$("#save").click(function(){var e=$("#save-name").val(),t=$("#save-amount").val();saveErrorCheck(e,t)||(saveThis=e+","+t+","+$("#save-units").val()+",0,"+saveThis,thisDateStamp=(new Date).getTime(),thisDateStamp=Number(thisDateStamp),""===useritemsindex[0]?useritemsindex[0]=thisDateStamp:useritemsindex.push(thisDateStamp),numuseritems=useritemsindex.length,localStorage.setItem("useritem"+thisDateStamp,saveThis),localStorage.setItem("useritemsindex",useritemsindex),db.push(saveThis.split(",")),dbitems.push(e),dbL++,thisUserRecipeDate=new Date(thisDateStamp),thisUserRecipeDate=thisUserRecipeDate.getMonth()+1+"/"+thisUserRecipeDate.getDay()+"/"+thisUserRecipeDate.getFullYear(),$("#save-container").hide(),$("#save-after").show(),$("#my-recipe-count").html(numuseritems),$("#my-recipes-list").prepend('<li class="useritem" data-useritem-id="'+thisDateStamp+'"><input class="recipe-name" type="text" value="'+e+'"><span class="remove-recipe"></span><span class="recipe-date">'+thisUserRecipeDate+"</span></li>"),$("#save-name").val(""),document.activeElement.blur(),myRecipeClass())}),$("#my-recipes-list").on("click","span.remove-recipe",function(){confirmDelete("this recipe")&&$(this).parent().velocity("slideUp",{duration:300,complete:function(){var e=$(this).attr("data-useritem-id"),t=localStorage.getItem("useritem"+e).split(",")[0];useritemsindex.splice(useritemsindex.indexOf(e),1),dbitems.splice(dbitems.indexOf(t),1),localStorage.removeItem("useritem"+e),localStorage.setItem("useritemsindex",useritemsindex),numuseritems=useritemsindex.length,$("#my-recipe-count").html(numuseritems),$(this).remove(),myRecipeClass()}})}),$("#delete-all").click(function(){if(confirmDelete("all recipes")){for($("li.useritem").velocity("slideUp",{duration:300,complete:function(){$(this).remove()}}),i=0;i<numuseritems;i++){var e=localStorage.getItem("useritem"+useritemsindex[i]).split(",")[0];dbitems.splice(dbitems.indexOf(e),1),localStorage.removeItem("useritem"+useritemsindex[i])}localStorage.setItem("useritemsindex",""),useritemsindex=[],numuseritems=0,$("#my-recipe-count").html(numuseritems),myRecipeClass()}}),$("#submit").click(function submit(){function specStore(){spec.sat=facts[2]/mass*specMax,spec.pufa=facts[3]/mass*specMax,spec.mufa=facts[4]/mass*specMax,spec.ofat=(facts[1]-facts[2]-facts[3]-facts[4])/mass*specMax,spec.na=facts[5]/1e3/mass*specMax,spec.k=facts[6]/1e3/mass*specMax,spec.fiber=facts[8]/mass*specMax,spec.sugar=facts[9]/mass*specMax,spec.ocarbs=(facts[7]-facts[8]-facts[9])/mass*specMax,spec.protein=facts[10]/mass*specMax}var t0=performance.now();c++;var facts=[],recipe=[],tFact=0,tFactAdj=0,error=!1;for(x in types)facts.push(0);var contSpecWidth=$("#spectrum").width();if($(window).width()<736)var rankSize=$("#rank-cal").width(),specWidths={container:contSpecWidth,sat:contSpecWidth,mufa:contSpecWidth,pufa:contSpecWidth,ofat:contSpecWidth,na:contSpecWidth,k:contSpecWidth,fiber:contSpecWidth,sugar:contSpecWidth,ocarbs:contSpecWidth,protein:contSpecWidth};else var rankSize=.75*$("#rank-cal").width(),specWidths={container:contSpecWidth,sat:$("#spectrum-sat-label").width(),mufa:$("#spectrum-mufa-label").width(),pufa:$("#spectrum-pufa-label").width(),ofat:$("#spectrum-ofat-label").width(),na:$("#spectrum-na-label").width(),k:$("#spectrum-k-label").width(),fiber:$("#spectrum-fiber-label").width(),sugar:$("#spectrum-sugar-label").width(),ocarbs:$("#spectrum-ocarbs-label").width(),protein:$("#spectrum-protein-label").width()};var factsL=facts.length,serv=$("#servings").val(),items=$("#entries div.entry").not("[data-undo-level]").find("input.item"),specSize=$("#spectrum-wrapper").width(),specMax=specSize,crSize=$("#cr-colchart").height(),rank={cal:[],fat:[],carbs:[],protein:[]},rankMisc={totals:{},tWidths:{cal:rankSize,fat:rankSize,carbs:rankSize,protein:rankSize},names:{cal:"Calories",fat:"Fat",carbs:"Carbs",protein:"Protein"},units:{cal:"",fat:"g",carbs:"g",protein:"g"},widths:{cal:[],fat:[],carbs:[],protein:[]},html:{}};if(items.splice(0,1),items.each(function(){var tVal=$(this).val(),d=$(this).parent().children("span.details"),uList=d.children("select.units-list"),amount=d.children("input.amount").val(),builder=[];for(i=0;i<dbL;i++)if(db[i][0]==tVal){for(builder.push(tVal),j=0;j<factsL;j++){if(tFact=Number(db[i][j+4].replace("%","")),uList.length&&(tFact*=conv[uList.val().replace(/\s+/g,"")][db[i][2].replace(/\s+/g,"")]),""===amount||isNaN(eval(amount))){alert("Please enter a valid amount for all ingredients."),error=!0;break}if(""===serv||isNaN(eval(serv))){alert("Please enter a valid servings amount."),error=!0;break}tFactAdj=tFact/db[i][1]*eval(amount)/serv,facts[j]+=tFactAdj,tFactAdj=round(tFactAdj,.5),builder.push(tFactAdj),j+4==4&&rank.cal.push([tFactAdj,tVal]),j+4==5&&rank.fat.push([tFactAdj,tVal]),j+4==11&&rank.carbs.push([tFactAdj,tVal]),j+4==14&&rank.protein.push([tFactAdj,tVal])}recipe.push(builder);break}}),!error){var recipeL=recipe.length;rankMisc.totals.cal=round(facts[0],.5),rankMisc.totals.fat=round(facts[1],.5),rankMisc.totals.carbs=round(facts[7],.5),rankMisc.totals.protein=round(facts[10],.5),1==c&&(lastRank=rank,lastRankTotals=rankMisc.totals,lastRankL=recipeL);var delta=0,deltaP=0,deltaTAmount=0;for(x in rank){for(rank[x].sort(function(e,t){return e[0]-t[0]}).reverse(),i=0;i<lastRankL;i++)for(j=0;j<recipeL;j++)rank[x][j].push("none",0),lastRank[x][i][1]==rank[x][j][1]&&(delta=rank[x][j][0]-lastRank[x][i][0],rank[x][j][3]=Math.abs(delta),delta>0?rank[x][j][2]="positive":delta<0&&(rank[x][j][2]="negative"));delta=rankMisc.totals[x]-lastRankTotals[x],deltaTAmount=Math.abs(delta),deltaTAmountP=Math.round(deltaTAmount/lastRankTotals[x]*100),deltaTAmountM=Number(Math.round(rankMisc.totals[x]/lastRankTotals[x]+"e1")+"e-1"),isFinite(deltaTAmountP)!==!0&&(deltaTAmountP="&#8734"),isFinite(deltaTAmountM)!==!0&&(deltaTAmountM="&#8734");var deltaTClass=delta>0?"positive":delta<0?"negative":"none";for(0===rankMisc.totals[x]&&(rankMisc.tWidths[x]=0),rankMisc.html[x]='<li class="rank-entry total"><div class="hbar-background" style="width: '+rankSize+'px"><span class="hbar"></span></div><span class="hbar-label"><label>'+rankMisc.totals[x]+"</label>"+rankMisc.units[x]+'</span><div class="delta '+deltaTClass+'"><span class="delta-v">'+deltaTAmount+rankMisc.units[x]+'</span><span class="delta-p">'+deltaTAmountP+'%</span><span class="delta-m">'+deltaTAmountM+'x</span></div><span class="name">Total '+rankMisc.names[x]+"</span></li>",rankMisc.widths[x].push(rankMisc.tWidths[x]),i=0;i<recipeL;i++)rankMisc.html[x]+='<li class="rank-entry"><div class="hbar-background" style="width: '+rankSize+'px"><span class="hbar"></span></div><span class="hbar-label"><label>'+rank[x][i][0]+"</label>"+rankMisc.units[x]+'</span><span class="delta '+rank[x][i][2]+'">'+rank[x][i][3]+rankMisc.units[x]+'</span><span class="name">'+rank[x][i][1]+"</span></li>",rankMisc.widths[x].push(rank[x][i][0]/rankMisc.totals[x]*rankSize)}lastRank=rank,lastRankTotals=rankMisc.totals,lastRankL=recipeL;var mass=facts[1]+facts[5]/1e3+facts[6]/1e3+facts[7]+facts[10],spec={};specStore();var specOverflow=0;for(x in spec)specOverflow+=Math.max(0,spec[x]-specWidths[x]);specMax=specMax-specWidths.container+(specMax-specOverflow),specStore(),facts[0]<5?facts[0]=0:facts[0]<50?facts[0]=round(facts[0],5):facts[0]=round(facts[0],10);var fatcal=9*facts[1];for(fatcal=fatcal<5?0:fatcal<50?round(fatcal,5):round(fatcal,10),i=1;i<5;i++)facts[i]<.5?facts[i]=0:facts[i]<5?facts[i]=round(facts[i],.5):facts[i]=round(facts[i],1);for(i=5;i<7;i++)facts[i]<5?facts[i]=0:facts[i]<=140?facts[i]=round(facts[i],5):facts[i]=round(facts[i],10);for(i=7;i<11;i++)facts[i]<.5?facts[i]=0:facts[i]<1?facts[i]="<1":facts[i]=round(facts[i],1);for(i=11;i<31;i++)facts[i]<1?facts[i]=0:facts[i]<2?facts[i]=2:facts[i]<10?facts[i]=round(facts[i],2):facts[i]<50?facts[i]=round(facts[i],5):facts[i]=round(facts[i],10);facts[31]=round(facts[31],1),facts[32]=round(facts[32],.5);var caloricratio={},carbs=facts[7],protein=facts[10];"<1"==carbs&&(carbs=0),"<1"==protein&&(protein=0);var calories=9*facts[1]+4*carbs+4*protein;0===calories?caloricratio.fat=caloricratio.carbs=caloricratio.protein=0:(caloricratio.fat=Math.round(9*facts[1]/calories*100),caloricratio.carbs=Math.round(4*carbs/calories*100),caloricratio.protein=Math.round(4*protein/calories*100));var t1=performance.now();console.log(t1-t0),saveThis=facts.toString();var recipeBanner="";for(i=0;i<recipeL;i++)recipeBanner+="<span>"+recipe[i][0]+"</span>";$("#recipe").html(recipeBanner),$("#glances").removeClass("animated"),$("#gl-cal h1").html("<label>"+facts[0]+"</label>"),$("#gl-satfat h1").html("<label>"+facts[2]+"</label><sub>g</sub>"),$("#gl-fiber h1").html("<label>"+facts[8]+"</label><sub>g</sub>"),$("#gl-sugar h1").html("<label>"+facts[9]+"</label><sub>g</sub>"),$("#gl-protein h1").html("<label>"+facts[10]+"</label><sub>g</sub>");var panelItem;for(i=0;i<factsL;i++)panelItem=$("#"+types[i]),panelItem.text(facts[i]+labelunits[i]),facts[i]>=20&&i>14&&i<31?panelItem.parent().removeClass("present").addClass("significant"):facts[i]>0&&i>14&&i<31?panelItem.parent().removeClass("significant").addClass("present"):panelItem.parent().removeClass("present significant");$("#fatcal").text(fatcal);for(x in rank)$("#rank-"+x).html(rankMisc.html[x]);var rankAnimated=!1;c>1&&$("#delta-view-control").show();var itemizedHtml="";for(i=0;i<recipeL;i++){for(itemizedHtml+="<ul><li>"+recipe[i][0]+"</li>",j=1;j<16;j++)itemizedHtml+="<li>"+recipe[i][j]+labelunits[j-1]+"</li>";itemizedHtml+="</ul>"}$("#full-details-list").html(itemizedHtml);var plaintext="<p><b>Ingredients:</b> ";for(i=0;i<recipeL;i++)plaintext+=recipe[i][0],i<recipeL-1&&(plaintext+=", ");for(plaintext+="</p><p><b>Amount per serving:</b> ",i=0;i<labelsL;i++)plaintext+=labels[i]+" "+facts[i]+labelunits[i],i<labelsL-1&&(plaintext+=", ");$("#plaintext-container").html(plaintext+"</p>"),$("#save-after").hide(),$("#save-container").show(),$("#output").addClass("revealed"),$("#footer").addClass("revealed"),$("#glances-container").velocity("scroll",{duration:500,easing:"ease-in-out",offset:-40}),$("#glances").addClass("animated"),$("#glances h1 label").each(function(){if("<1"!=$(this).text()){var e=$(this).text();$(this).velocity({tween:0},{duration:1e3,progress:function(t,a,i,s){$(this).text(Math.round(e*a))},complete:function(){$(this).text(e)}})}});var specAnimated=!1,crAnimated=!1,windowH=window.innerHeight,windowW=window.innerWidth,specOffset=(windowH-$("#spectrum-container").height()/2)/1.3,crOffset=(windowH-$("#cr").height()/2)/2,rankOffset=(windowH-$("#rankings").height()/2)/1.3;$(window).scroll(function(){if($(document).scrollTop()>=$("#abovefold").height()+80&&windowW>735?$("#recipe-banner").attr("class","visible"):$("#recipe-banner").attr("class","hidden"),$(document).scrollTop()>$("#spectrum-container").offset().top-specOffset&&specAnimated===!1){for(x in spec)$("#spectrum-"+x).velocity({width:spec[x]},{duration:1500,easing:[.075,.82,.165,1]});specAnimated=!0}if($(document).scrollTop()>$("#cr").offset().top-crOffset&&crAnimated===!1){for(x in caloricratio)$("#cr-"+x+".vbar-label").html("<label>"+caloricratio[x]+"</label><sup>%</sup>"),$("#cr-"+x+"-vbar-mask").velocity({height:crSize-caloricratio[x]/100*crSize},{duration:800,easing:[.075,.82,.165,1]});$("#cr-colchart-labels .vbar-label label").each(function(){var e=$(this).text();$(this).velocity({tween:0},{duration:1e3,progress:function(t,a,i,s){$(this).text(Math.round(e*a))},complete:function(){$(this).text(e)}})}),crAnimated=!0}if($(document).scrollTop()>$("#rankings").offset().top-rankOffset&&rankAnimated===!1){for(x in rank)for(i=0;i<recipeL+1;i++)$("#rank-"+x).find(".hbar").eq(i).velocity({width:rankMisc.widths[x][i]},{duration:1e3,easing:[.075,.82,.165,1]});rankAnimated=!0}})}})}var dbPath="data/database2.csv",headerRows=2,types=["cal","fat","sat","pufa","mufa","na","pot","carbs","fiber","sugar","protein","vita","vitc","ca","fe","vitd","vite","vitk","b1","b2","b3","b6","b9","b12","cu","iod","mg","mn","pho","se","zn","omega3","solfib"],labelunits=["","g","g","g","g","mg","mg","g","g","g","g","%","%","%","%","%","%","%","%","%","%","%","%","%","%","%","%","%","%","%","%","mg","g"],labels=["Calories","Total Fat","Saturated Fat","Polyunsaturated Fat","Monounsaturated Fat","Sodium","Potassium","Total Carbohydrates","Dietary Fiber","Sugar","Protein","Vitamin A","Vitamin C","Calcium","Iron"],detailsHtmlVol='<input type="text" class="amount" value="1"><select class="units-list"><option value="ml">ml</option><option value="tsp">tsp</option><option value="tbsp">tbsp</option><option value="fl oz">fl oz</option><option value="cup">cup</option><option value="pint">pint</option><option value="quart">quart</option></select>',detailsHtmlWt='<input type="text" class="amount" value="1"><select class="units-list"><option value="g">g</option><option value="oz">oz</option><option value="lb">lb</option></select>';null===localStorage.getItem("useritemsindex")&&localStorage.setItem("useritemsindex","");var useritemsindex=localStorage.getItem("useritemsindex").split(",");if(1===useritemsindex.length&&""===useritemsindex[0])var numuseritems=0;else var numuseritems=useritemsindex.length;var db=[];$.get(dbPath,function(e){for(var t=types.length+4,a=e.split(",").slice(headerRows*t),i=(a.length-1)/t,s=[],r=0,n=0;n<i;n++){s=[];for(var l=0;l<t;l++)s.push(a[r].trim()),r++;db.push(s)}pushUserData(db)});
+/* Harvest v3 | (c) 2017 Brandon J. C. Fuller, All Rights Reserved | Requires jQuery and jQuery UI *//*	HARVEST 
+	version 3
+
+	(c) 2017 Brandon J. C. Fuller. All Rights Reserved.		
+    
+	
+*/
+
+(function(){
+
+    /*
+     * Set up a few things...
+     */
+    var H = {
+        gid : '1mmewbLHeNnSd0ZPk7aWNspydF5b6ZTH1oAHWy2VnOAc',
+        data : {},
+        items : [],
+        metrics : [],
+        exclude : ['name', 'serving', 'unit', 'mass'],
+        undo : [],
+        units : {
+            v : ['ml','tsp','tbsp','fl oz', 'cup', 'pint', 'quart'],
+			w : ['g','oz','lb'],
+            conv : {
+                ml:{ ml:1, tsp:0.2028, tbsp:0.0676, floz:0.0338, cup:0.0042, pint:0.0021, quart:0.0011 },
+                tsp:{ ml:4.93, tsp:1, tbsp:0.3333, floz:0.1666, cup:0.0208, pint:0.0104, quart:0.0052 },
+                tbsp:{ ml:14.79, tsp:3, tbsp:1, floz:0.5, cup:0.0625, pint:0.0312, quart:0.0156 },
+                floz:{ ml:29.57, tsp:6, tbsp:2, floz:1, cup:0.125, pint:0.0624, quart:0.0312 },
+                cup:{ ml:236.59, tsp:48, tbsp:16, floz:8, cup:1, pint:0.5, quart:0.25 },
+                pint:{ ml:473.18, tsp:96, tbsp:32, floz:16, cup:2, pint:1, quart:0.5 },
+                quart:{ ml:946.35, tsp:192, tbsp:64, floz:32, cup:4, pint:2, quart:1 },
+                g:{ g:1, oz:0.0353, lb:0.0022 },
+                oz:{ g:28.35, oz:1, lb:0.0625 },
+                lb:{ g:453.59, oz:16, lb:1 }
+            }
+        }
+    };
+    
+    /*
+     * Autocomplete
+     */
+    var AC = {
+        
+        init: function(el) {
+            
+            var e = {
+                el : el,
+                parent : el.parentNode,
+                ul : document.createElement('ul')
+            };
+            
+            e.ul.className = 'autocomplete';
+            e.parent.insertBefore(e.ul, e.el);
+            
+            e.el.addEventListener('input', function() {
+                AC.call(e);
+            });
+            
+        },
+        
+        call: function(e) {
+            
+            var val, list, re, i, li;
+            
+            val = e.el.value;
+            list = [];
+            re = new RegExp(val, 'i');
+                        
+            for (i in H.items) {
+                if (re.test(H.items[i])) {
+                    list.push(H.items[i]);
+                }
+            }
+                        
+            e.ul.innerHTML = '';
+            
+            for (i in list) {
+                
+                li = document.createElement('li');
+                li.innerHTML = list[i];
+                
+                // Bind listeners in a closure
+                (function(_li, _e) {
+                    li.addEventListener('mouseover', function() {
+                        AC.hover(this, _e);
+                    });
+                    li.addEventListener('click', function() {
+                        AC.click(this, _e);
+                    });
+                })(li, e);
+                
+                e.ul.appendChild(li);
+                
+            }
+            
+            if (list.length) {
+                e.ul.firstChild.className = 'active';
+                e.ul.classList.add('active');
+            }
+            
+        },
+        
+        hover: function(li, e) {            
+            var lis, i;
+            
+            lis = e.ul.querySelectorAll('li');
+            for (i=0; i<lis.length; i++) {
+                lis[i].className = '';
+            }
+            
+            li.className = 'active';
+            
+        },
+        
+        click: function(li, e) {
+            e.el.value = li.innerHTML;
+            e.ul.classList.remove('active');
+            e.ul.innerHTML = '';
+        }
+        
+    };
+    
+    
+    /*
+     * Helper functions
+     */
+    var Helpers = {
+        
+        /*
+         * Add an input
+         * @param form el the form to add the input to
+         */
+        addInput: function(form) {
+            
+            var el, parts = {};
+            
+            // Create row div
+            el = document.createElement('div');
+            var d = new Date();
+            el.id = d.getTime(); // assign unique identifier
+            el.className = 'entry';
+            
+            // Create input
+            parts.input = document.createElement('input');
+            parts.input.type = 'text';
+            parts.input.className = 'item';
+            parts.input.placeholder = 'Enter ingredient';
+            el.appendChild(parts.input);
+            
+            // Create amount
+            parts.amount = document.createElement('input');
+            parts.amount.type = 'text';
+            parts.amount.className = 'amount hidden';
+            parts.amount.value = '1';
+            el.appendChild(parts.amount);
+            
+            parts.units = document.createElement('select');
+            parts.units.className = 'units hidden';
+            el.appendChild(parts.units);
+                        
+            // Create remove control
+            parts.remove = document.createElement('button');
+            parts.remove.type = 'button';
+            parts.remove.innerHTML = 'Remove';
+            parts.remove.className = 'hidden';
+            parts.remove.addEventListener('click', function() {
+                H.undo.push(this.parentNode.id);
+                this.parentNode.classList.add('removed');
+                console.log('user removed item (id: ' + this.parentNode.id + ')');
+            });
+            el.appendChild(parts.remove);
+            
+            // Append div to form
+            form.appendChild(el);
+            
+            // Focus input
+            parts.input.focus();
+            
+            // Initate autocomplete
+            AC.init(parts.input);
+            
+            
+            
+            console.log('user added an input');
+            
+        },
+        
+        
+        /*
+         * Build the units select menu and display hidden parts
+         * @param parts obj the entry's DOM parts
+         */
+         buildUnitList: function(parts) {
+            var ul, output = '';
+            
+            ul = Helpers.getProperUnits(parts.input);
+                                    
+            for(var i=0; i<ul.length; i++) {
+                output += '<option value="' + ul[i].replace(/\s/g, '') + '">' + ul[i] + '</option>';
+            }
+            parts.units.innerHTML = output;
+            
+            parts.units.value = H.data[parts.input.value.replace(/\s/g, '')].unit;
+                        
+            parts.units.classList.remove('hidden');
+            parts.amount.classList.remove('hidden');
+            parts.remove.classList.remove('hidden');
+            
+        },
+        
+        
+        /*
+         * Return the proper units for the selected item
+         * @param input el the item input
+         * @return arr an array with the available units
+         */
+        getProperUnits: function(input) {           
+            var item, unit;
+            
+            item = input.value.replace(/\s/g, '');
+            unit = H.data[item].unit;
+                                    
+            if (H.units.w.indexOf(unit) > -1) {
+                return H.units.w;
+            } else if (H.units.v.indexOf(unit) > -1) {
+                return H.units.v;
+            } else {
+                unit = [unit];
+                return unit;
+            }
+            
+        },
+        
+        doConversion: function(S, item) {
+                        
+            var data = {}, m, x, y;
+            
+            x = S.specs[item].unit;
+            y = H.data[item].unit;
+                        
+            for (var i=0; i<H.metrics.length; i++) {
+                m = H.metrics[i];
+                data[m] = H.data[item][m].replace('%', '');
+                
+                // Convert original data to new units, but only if there's something to convert to
+                if (H.units.w.indexOf(x) > -1 || H.units.v.indexOf(x) > -1) {
+                    data[m] *= H.units.conv[x][y];
+                }
+                
+                // Adjust for entered amount and servings
+                data[m] = data[m] / H.data[item].serving * S.specs[item].amount / S.servings;
+            }
+            
+            return data;
+            
+        },
+        
+        undo: function() {
+            
+            if (H.undo.length > 0) {
+                var id = H.undo.pop();
+                document.getElementById(id).classList.remove('removed');
+                console.log('user undid removal (id: ' + id + ')');
+            }
+            
+        },
+        
+        round: function(q,r) {
+            return Math.round(q/r)*r;
+        }
+        
+    };
+    
+    
+    // Go get data once the page loads
+    window.addEventListener('load', getData(parse), false);
+    
+
+    /*
+     * Get data from Google Spreadsheet JSON API
+     * @param success func the callback function
+     */
+    function getData(success) {
+        var url, req = new XMLHttpRequest();
+        
+       console.log('trying to retrieve data...');
+
+        req.onreadystatechange = function() {
+            if (req.readyState == XMLHttpRequest.DONE && req.status == 200) {
+                success(req.responseText);
+            } else if (req.status !== 0 && req.status != 200) {
+                console.log('unable to retrieve data (Error ' + req.status + ')');
+            }
+        };
+        
+        url = "https://spreadsheets.google.com/feeds/list/" + H.gid + "/default/public/values?alt=json";
+        
+        req.open('GET', url, true);
+        req.send();
+
+    }
+    
+    
+    /*
+     * Parse JSON data into a more usable form
+     * @param data obj the raw data
+     */
+    function parse(data) {
+        var entries, entry, name, parsed = {};
+        
+        console.log('data retrieved, attempting to parse...');
+        
+        data = JSON.parse(data);
+        entries = data.feed.entry;
+                        
+        for(var i=0; i<entries.length; i++) {
+                     
+            entry = {};
+            
+            for (var key in entries[i]) {
+                if (key.includes('gsx$') && key != 'gsx$name') {
+                    entry[key.replace('gsx$', '')] = entries[i][key].$t;
+                    
+                }
+            }
+                        
+            name = entries[i].gsx$name.$t;
+            H.items.push(name);
+            parsed[name.replace(/\s/g, '')] = entry;
+            
+        }  
+                
+        for (var x in entry) {
+            if (H.exclude.indexOf(x) == -1) {
+                H.metrics.push(x);
+            }
+        }
+                
+        H.data = parsed;
+        
+        console.log('H', H);
+        console.log('done parsing, continuing on to init');
+        
+        init();
+        
+    }
+    
+    
+    /*
+     * Initialize the page
+     */
+    function init() {
+        
+        console.log('init...');
+        
+        var form = document.getElementById('form'),
+            controls = document.getElementById('controls');
+        
+        // Add an initial input box to the page
+        Helpers.addInput(form);
+        
+        // Bind listener to Add Input button
+        controls.querySelector('#add').addEventListener('click', function(){
+            Helpers.addInput(form);
+        }, false);
+        
+        // Bind listener to Submit button
+        controls.querySelector('#submit').addEventListener('click', function(){
+            submit(form);
+        }, false);
+        
+        // Bind listener to Undo button
+        controls.querySelector('#undo').addEventListener('click', function(){
+            Helpers.undo();
+        }, false);
+        
+        console.log('done initializing, waiting for user input');
+        
+    }
+    
+    
+    /*
+     * Handle the submit
+     * @param form el the submit form div
+     */
+    function submit(form) {
+        
+        console.log('user submitted, attempting to parse input...');
+        
+        var entries, name, amount, unit, key, totals = [], i, x;
+        
+        var S = {
+                specs : {},
+                servings : document.getElementById('servings').value,
+                totals : {}
+            };
+        
+        // Gather all entries and populate S with the information
+        entries = form.querySelectorAll('div.entry:not(.removed)');
+
+        for (i=0; i<entries.length; i++) {
+            
+            name = entries[i].querySelector('input.item').value;
+            
+            if (name) {
+                
+                amount = entries[i].querySelector('input.amount').value;
+                unit = entries[i].querySelector('select.units').value;
+                                
+                key = name.replace(/\s/g, '');
+                
+                S.specs[key] = {
+                    name : name,
+                    amount : amount,
+                    unit : unit
+                };
+                   
+                // Send data out for unit/amount conversion
+                S.specs[key].data = Helpers.doConversion(S, key);
+            }
+        }
+                    
+        // Add metrics together across items
+        for (x in S.specs) {
+            totals.push(S.specs[x].data);
+        }
+                
+        for (i=0; i<totals.length; i++) {
+            for (x in totals[i]) {
+                S.totals[x] = (S.totals[x] || 0) + totals[i][x];
+            }
+        }
+        
+        console.log('done parsing user input, continuing on');
+                
+        doRounding(S);
+        displayGlances(S);
+        
+    }   
+    
+    
+    /*
+     * Round everything appropriately
+     * @param S obj the parsed submitted data
+     */
+    function doRounding(S) {
+        
+        console.log('doing rounding...');
+        
+        var r = {}, t = S.totals, x;
+        
+        // Define rounding groupings
+        var fats = ['fat', 'sat', 'mufa', 'pufa'],
+            elcts = ['na', 'k'],
+            cp = ['carb', 'fiber', 'sugar', 'protein'],
+            vm = ['vita', 'vitc', 'vitd', 'vite', 'vitk', 'b1', 'b2', 'b3', 'b6', 'b9', 'b12', 'ca', 'cu', 'fe', 'iod', 'mg', 'mn', 'phos', 'se', 'zn'];            
+            
+        // Calories
+        r.cal = t.cal<5 ? 0 : t.cal<50 ? Helpers.round(t.cal,5) : Helpers.round(t.cal,10);
+        
+        // Calories from fat
+        r.fatcal = t.fat * 9;
+        r.fatcal = r.fatcal<5 ? 0 : r.fatcal<50 ? Helpers.round(r.fatcal,5) : Helpers.round(r.fatcal,10);
+        
+        // Fats
+        for (x in fats) {
+            r[fats[x]] = t[fats[x]]<0.5 ? 0 : t[fats[x]]<5 ? Helpers.round(t[fats[x]],0.5) : Helpers.round(t[fats[x]],1);  
+        }
+        
+        // Electrolytes
+        for (x in elcts) {
+            r[elcts[x]] = t[elcts[x]]<5 ? 0 : t[elcts[x]]<=140 ? Helpers.round(t[elcts[x]],5) : Helpers.round(t[elcts[x]],10);
+        }
+        
+        // Carbs and protein
+        for (x in cp) {
+            r[cp[x]] = t[cp[x]]<0.5 ? 0 : t[cp[x]]<1 ? '<1' : Helpers.round(t[cp[x]],1);
+        }
+        
+        // Vitamins and minerals
+        for (x in vm) {
+            r[vm[x]] = t[vm[x]]<1 ? 0 : t[vm[x]]<2 ? 2 : t[vm[x]]<10 ? Helpers.round(t[vm[x]],2) : t[vm[x]]<50 ? Helpers.round(t[vm[x]],5) : Helpers.round(t[vm[x]],10);
+        }
+        
+        // Other
+        r.solfib = Helpers.round(t.solfib,1);
+        r.omega3 = Helpers.round(t.omega3,0.5);
+        
+        
+        S.adj = r;
+        
+        console.log('S', S);
+        console.log('done with rounding');
+        
+    }
+    
+    
+    /*
+     * Display glances
+     * @param S obj the parsed submitted data
+     */
+    function displayGlances(S) {
+        
+        console.log('displaying glances...');
+        
+        var glances, ul, x, li, div, p, el;
+        
+        glances = {
+            'Calories' : S.adj.cal,
+            'Saturated Fat' : S.adj.sat,
+            'Fiber' : S.adj.fiber,
+            'Sugar' : S.adj.sugar,
+            'Protein' : S.adj.protein
+        };
+        
+        ul = document.createElement('ul');
+        
+        for (x in glances) {
+            
+            li = document.createElement('li');
+            
+            div = document.createElement('div');
+            div.className = 'glances-value';
+            div.innerHTML = glances[x];
+            li.appendChild(div);
+            
+            p = document.createElement('p');
+            p.className = 'glances-caption';
+            p.innerHTML = x;
+            li.appendChild(p);
+            
+            ul.appendChild(li);
+            
+        }
+        
+        el = document.getElementById('glances');
+        el.innerHTML = '';
+        el.appendChild(ul);
+        
+        console.log('done displaying glances');
+        
+    }
+    
+    
+})();

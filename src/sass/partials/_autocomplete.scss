@@ -1,0 +1,31 @@
+/* ==============================
+   AUTOCOMPLETE
+   ============================== */
+
+.autocomplete {
+
+    & {
+        display: none;
+        z-index: 9990;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        border: 1px solid #ddd;
+    }
+    
+    &.active {
+        display: block;
+    }
+    
+    .active {
+        background: $blue;
+        color: $white;
+    }
+    
+    .active:hover {
+        cursor: pointer;
+    }
+    
+}

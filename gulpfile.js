@@ -28,14 +28,14 @@ gulp.task('scripts', scripts);
 
 function scripts(done) {
         
-  var banner = ['/* Harvest v2.3 | (c) 2017 Brandon J. C. Fuller, All Rights Reserved | Requires jQuery 3.1.1 (jquery.org), jQuery UI 1.12.1 (jqueryui.com), and Velocity.js 1.3.1 (velocityjs.org) */'].join('\n')
+  var banner = ['/* Harvest v3 | (c) 2017 Brandon J. C. Fuller, All Rights Reserved | Requires jQuery and jQuery UI */'].join('\n')
   
   gulp.src('./src/js/*.js')
     .pipe(jshint(done))
     .pipe(jshint.reporter('default'));
 	gulp.src('./src/js/*.js')
     .pipe(concat('harvest.built.js'))
-    .pipe(uglify())
+    //.pipe(uglify())
     .pipe(header(banner))
     .pipe(gulp.dest('./js/'));
     
