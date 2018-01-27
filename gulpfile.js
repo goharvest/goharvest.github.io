@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var pkg = require('./package.json');
 
 // include plug-ins
 var jshint = require('gulp-jshint');
@@ -27,16 +28,24 @@ var autoprefixerOptions = {
 gulp.task('scripts', scripts);
 
 function scripts(done) {
-        
-  var banner = ['/* Harvest v3 | (c) 2017 Brandon J. C. Fuller, All Rights Reserved | Requires jQuery and jQuery UI */'].join('\n')
-  
+       
+  var banner = ['/**',
+                  ' * <%= pkg.name %>',
+                  ' * (c) 2018 Brandon J. C. Fuller, All Rights Reserved ',
+                  ' * ',
+                  ' * @version v<%= pkg.version %>',
+                  ' * @author <%= pkg.author %>',
+                  ' */',
+                  '',
+                  ''].join('\n');
+      
   gulp.src('./src/js/*.js')
     .pipe(jshint(done))
     .pipe(jshint.reporter('default'));
 	gulp.src('./src/js/*.js')
     .pipe(concat('harvest.built.js'))
     //.pipe(uglify())
-    .pipe(header(banner))
+    .pipe(header(banner, { pkg : pkg } ))
     .pipe(gulp.dest('./js/'));
     
 	done();

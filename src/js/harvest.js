@@ -1,11 +1,3 @@
-/*	HARVEST 
-	version 3
-
-	(c) 2017 Brandon J. C. Fuller. All Rights Reserved.		
-    
-	
-*/
-
 (function(){
 
     /*

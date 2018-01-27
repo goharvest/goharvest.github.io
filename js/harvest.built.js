@@ -1,10 +1,10 @@
-/* Harvest v3 | (c) 2017 Brandon J. C. Fuller, All Rights Reserved | Requires jQuery and jQuery UI *//*	HARVEST 
-	version 3
-
-	(c) 2017 Brandon J. C. Fuller. All Rights Reserved.		
-    
-	
-*/
+/**
+ * Harvest
+ * (c) 2018 Brandon J. C. Fuller, All Rights Reserved 
+ * 
+ * @version v2.3
+ * @author Brandon Fuller <blueplanet419@gmail.com>
+ */
 
 (function(){
 

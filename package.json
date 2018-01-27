@@ -1,9 +1,9 @@
 {
-  "name": "harvest",
+  "name": "Harvest",
   "version": "2.3",
   "description": "Harvest - Nutrition Analysis",
   "main": "index.html",
-  "homepage": "https://goharvest.bitbucket.io",
+  "homepage": "https://goharvest.github.io",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
