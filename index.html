@@ -10,13 +10,6 @@
 		<link rel="icon" type="image/png" href="images/favicon.png">
 		<title>Harvest</title>
 		<link rel="stylesheet" href="css/styles.built.css" media="all">
-        <style>
-            .hidden,
-            .removed {
-                display: none;
-            }
-
-        </style>
 	</head>
 	
 	<body>
@@ -26,24 +19,29 @@
         
         <main>
         
-            <section id="user-input">
+            <section>
+                <div id="user-input">
 
-                <div id="form"></div>
+                    <div id="form"></div>
 
-                <div id="servings-form">
-                    <label for="servings">Servings</label>
-                    <input id="servings" type="text" value="1">
+                    <div id="servings-form">
+                        <label for="servings">Servings</label>
+                        <input id="servings" type="text" value="1">
+                    </div>
+
+                    <div id="controls">
+                        <button id="add" type="button">Add</button>
+                        <button id="undo" type="button">Undo</button>
+                        <button id="submit" type="button">Submit</button>
+                    </div>
+                    
                 </div>
-
-                <div id="controls">
-                    <button id="add" type="button">Add</button>
-                    <button id="undo" type="button">Undo</button>
-                    <button id="submit" type="button">Submit</button>
-                </div>
-
             </section>
 
-            <section id="glances"></section>
+            <section>
+                <div id="glances">
+                </div>
+            </section>
         
         </main>
     
