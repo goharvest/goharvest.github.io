@@ -78,16 +78,8 @@
                 
                 li = document.createElement('li');
                 li.innerHTML = list[i];
-                
-                // Bind listeners in a closure
-                (function(_li, _e) {
-                    li.addEventListener('mouseover', function() {
-                        AC.hover(this, _e);
-                    });
-                    li.addEventListener('click', function() {
-                        AC.click(this, _e);
-                    });
-                })(li, e);
+                li.addEventListener('mouseover', AC.eventHandlerMouseover.bind(null, li, e));
+                li.addEventListener('click', AC.eventHandlerClick.bind(null, li, e));
                 
                 e.ul.appendChild(li);
                 
@@ -98,6 +90,14 @@
                 e.ul.classList.add('active');
             }
             
+        },
+        
+        eventHandlerMouseover : function(li, e) {
+            AC.hover(li, e);
+        },
+        
+        eventHandlerClick : function(li, e) {
+            AC.click(li, e);
         },
         
         hover: function(li, e) {            
@@ -503,7 +503,7 @@
         
         console.log('displaying glances...');
         
-        var glances, ul, x, li, div, p, el;
+        var glances, ul, x, li, spanValue, spanCaption, el;
         
         glances = {
             'Calories' : S.adj.cal,
@@ -519,15 +519,15 @@
             
             li = document.createElement('li');
             
-            div = document.createElement('div');
-            div.className = 'glances-value';
-            div.innerHTML = glances[x];
-            li.appendChild(div);
+            spanValue = document.createElement('span');
+            spanValue.className = 'glances-value';
+            spanValue.innerHTML = glances[x];
+            li.appendChild(spanValue);
             
-            p = document.createElement('p');
-            p.className = 'glances-caption';
-            p.innerHTML = x;
-            li.appendChild(p);
+            spanCaption = document.createElement('span');
+            spanCaption.className = 'glances-caption';
+            spanCaption.innerHTML = x;
+            li.appendChild(spanCaption);
             
             ul.appendChild(li);
             
