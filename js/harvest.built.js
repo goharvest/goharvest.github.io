@@ -41,11 +41,12 @@
      */
     var AC = {
         
-        init: function(el) {
+        init: function(parent, parts) {
             
             var e = {
-                el : el,
-                parent : el.parentNode,
+                parts : parts,
+                el : parts.input,
+                parent : parent,
                 ul : document.createElement('ul')
             };
             
@@ -116,6 +117,8 @@
             e.el.value = li.innerHTML;
             e.ul.classList.remove('active');
             e.ul.innerHTML = '';
+            
+            Helpers.displayItemOptions(e.parts);
         }
         
     };
@@ -177,7 +180,7 @@
             parts.input.focus();
             
             // Initate autocomplete
-            AC.init(parts.input);
+            AC.init(el, parts);
             
             
             
@@ -190,7 +193,7 @@
          * Build the units select menu and display hidden parts
          * @param parts obj the entry's DOM parts
          */
-         buildUnitList: function(parts) {
+         displayItemOptions: function(parts) {
             var ul, output = '';
             
             ul = Helpers.getProperUnits(parts.input);
