@@ -3,16 +3,15 @@ var pkg = require('./package.json');
 
 // include plug-ins
 var jshint = require('gulp-jshint');
-var imagemin = require('gulp-imagemin');
+//var jscs = require('gulp-jscs');
 var concat = require('gulp-concat');
-var stripDebug = require('gulp-strip-debug');
-var autoprefix = require('gulp-autoprefixer');
-var minifyCSS = require('gulp-minify-css');
+//var stripDebug = require('gulp-strip-debug');
+var uglify = require('gulp-uglify');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
-var autoprefixer = require('gulp-autoprefixer');
+var autoprefixer = require('autoprefixer');
+var postcss = require('gulp-postcss');
 var header = require('gulp-header');
-var uglify = require('gulp-uglify');
 
 // options
 var sassOptions = {
@@ -60,8 +59,9 @@ function styles(done) {
 	gulp.src('./src/sass/**/*.scss')
 		.pipe(sourcemaps.init())
 		.pipe(sass(sassOptions).on('error', sass.logError))
-		.pipe(autoprefixer(autoprefixerOptions))
 		.pipe(concat('styles.built.css'))
+	    .pipe(postcss([ autoprefixer() ]))
+	    //.pipe(header(banner, { pkg : pkg } ))
 		.pipe(sourcemaps.write('./map'))
 		.pipe(gulp.dest('./css/'));
 

@@ -2,7 +2,7 @@
  * Harvest
  * (c) 2018 Brandon J. C. Fuller, All Rights Reserved 
  * 
- * @version v2.3
+ * @version v2.3.0
  * @author Brandon Fuller <blueplanet419@gmail.com>
  */
 
