@@ -6,7 +6,7 @@ var jshint = require('gulp-jshint');
 //var jscs = require('gulp-jscs');
 var concat = require('gulp-concat');
 //var stripDebug = require('gulp-strip-debug');
-var uglify = require('gulp-uglify');
+var uglify = require('gulp-uglifyes');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var autoprefixer = require('autoprefixer');
@@ -43,7 +43,7 @@ function scripts(done) {
     .pipe(jshint.reporter('default'));
 	gulp.src('./src/js/*.js')
     .pipe(concat('harvest.built.js'))
-    //.pipe(uglify())
+    //.pipe(uglify({ ecma: 6 }))
     .pipe(header(banner, { pkg : pkg } ))
     .pipe(gulp.dest('./js/'));
     
