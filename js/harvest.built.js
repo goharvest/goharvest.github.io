@@ -52,8 +52,8 @@
                 
                 li = document.createElement( 'li' );
                 li.innerHTML = list[i];
-                li.addEventListener( 'mouseover', AC.eventHandlerMouseover.bind( null, li, e ) );
-                li.addEventListener( 'click', AC.eventHandlerClick.bind( null, li, e ) );
+                li.addEventListener( 'mouseover', AC.hover.bind( null, li, e ) );
+                li.addEventListener( 'click', AC.click.bind( null, li, e ) );
                 
                 e.ul.appendChild( li );
                 
@@ -62,16 +62,9 @@
             if ( list.length ) {
                 e.ul.firstChild.className = 'active';
                 e.ul.classList.add( 'active' );
+				H.ac.isOpen = true;
             }
             
-        }
-        
-        static eventHandlerMouseover( li, e ) {
-            AC.hover( li, e );
-        }
-        
-        static eventHandlerClick( li, e ) {
-            AC.click( li, e );
         }
         
         static hover( li, e ) {            
@@ -90,6 +83,7 @@
             e.el.value = li.innerHTML;
             e.ul.classList.remove( 'active' );
             e.ul.innerHTML = '';
+			H.ac.isOpen = false;
             
             Helpers.displayItemOptions( e.parts );
         }
@@ -252,15 +246,18 @@
      * Set up a few things...
      */
     var H = {
-        gid : '1mmewbLHeNnSd0ZPk7aWNspydF5b6ZTH1oAHWy2VnOAc',
-        data : {},
-        items : [],
-        metrics : [],
-        exclude : ['name', 'serving', 'unit', 'mass'],
-        undo : [],
-        units : {
-            v : ['ml','tsp','tbsp','fl oz', 'cup', 'pint', 'quart'],
-			w : ['g','oz','lb'],
+        gid: '1mmewbLHeNnSd0ZPk7aWNspydF5b6ZTH1oAHWy2VnOAc',
+        data: {},
+        items: [],
+        metrics: [],
+        exclude: ['name', 'serving', 'unit', 'mass'],
+		ac: {
+			isOpen: false
+		},
+        undo: [],
+        units: {
+            v: ['ml','tsp','tbsp','fl oz', 'cup', 'pint', 'quart'],
+			w: ['g','oz','lb'],
             conv : {
                 ml:{ ml:1, tsp:0.2028, tbsp:0.0676, floz:0.0338, cup:0.0042, pint:0.0021, quart:0.0011 },
                 tsp:{ ml:4.93, tsp:1, tbsp:0.3333, floz:0.1666, cup:0.0208, pint:0.0104, quart:0.0052 },
